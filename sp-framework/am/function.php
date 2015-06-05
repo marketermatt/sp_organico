@@ -159,7 +159,7 @@ class API_Manager_theme_Organico {
 			$this->ame_deactivate_checkbox 			= 'am_deactivate_organico_checkbox';
 			$this->ame_activation_tab_key 			= 'api_manager_theme_organico_dashboard';
 			$this->ame_deactivation_tab_key 		= 'api_manager_theme_organico_deactivation';
-			$this->ame_settings_menu_title 			= 'AM Theme Organico';
+			$this->ame_settings_menu_title 			= 'SP Theme Organico';
 			$this->ame_settings_title 				= 'API Manager Theme Organico';
 			$this->ame_menu_tab_activation_title 	= __( 'License Activation', 'api-manager-organico' );
 			$this->ame_menu_tab_deactivation_title 	= __( 'License Deactivation', 'api-manager-organico' );
