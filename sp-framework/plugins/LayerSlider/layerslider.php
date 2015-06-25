@@ -32,7 +32,7 @@ if(!defined('ABSPATH')) {
 	// Constants
 	define('LS_ROOT_FILE', __FILE__);
 	define('LS_ROOT_PATH', dirname(__FILE__));
-	define('LS_ROOT_URL', plugins_url('', __FILE__));
+	define('LS_ROOT_URL', '/wp-content/themes/organico/sp-framework/plugins/LayerSlider');
 	define('LS_PLUGIN_VERSION', '5.4.0');
 	define('LS_PLUGIN_SLUG', basename(dirname(__FILE__)));
 	define('LS_PLUGIN_BASE', plugin_basename(__FILE__));

@@ -1,7 +1,6 @@
 		<?php do_action( 'sp_before_main_footer_container' ); ?>
-		<footer id="footer-wrap">
+		<footer id="footer-wrap" class="group" role="contentinfo">
 			<?php get_sidebar( 'footer' ); ?>
-
 			<section class="footer-bar">
 				<div class="container">
 					<div class="row">

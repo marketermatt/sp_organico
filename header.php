@@ -9,8 +9,13 @@ global $page, $paged, $post;
 <title><?php wp_title( '|', true, 'right' ); ?></title>
 <link rel="profile" href="http://gmpg.org/xfn/11" />
 <link rel="pingback" href="<?php bloginfo( 'pingback_url' ); ?>" />
-
+<link href='http://fonts.googleapis.com/css?family=Yanone+Kaffeesatz' rel='stylesheet' type='text/css'>
 <?php wp_head(); ?>
+<script>
+jQuery(document).ready(function() {
+	jQuery('ul.sub-menu li').append('<span class="before"> </span>');
+});
+</script>
 </head>
 
 <body <?php body_class(); ?>>
@@ -18,6 +23,41 @@ global $page, $paged, $post;
 <!--[if lte IE 7]><p class="noscript"><?php _e( 'It appears you\'re using a very old Internet Explorer browser version.  Please update to the latest version to view this site properly.', 'sp-theme' ); ?></p><![endif]-->
 
 <div id="wrap-all">
+	<div class="group" id="top_wrapper">
+    	<div class="container">
+			<?php sp_get_menu( 'primary-menu' ); ?>
+            
+			<!--HEADER CART-->
+            <div id="header_cart">
+            	<div class="hover-wrap">
+            	<a onclick="return false" class="cart_icon" title="Checkout" href="/web/20130116145457/http://organico.splashingpixels.com/store/checkout/">
+						<span class="icon"></span>
+						<em class="count">0</em>
+					</a>
+            	<div id="cartContents">
+                    <div class="shopping-cart-wrapper">
+					<p class="empty">
+						Your shopping cart is empty
+					</p>
+                    </div>
+                </div><!--close cartContents-->    
+                </div><!--close hover-wrap-->   
+            	<a class="account_icon" title="My Account" href="/web/20130116145457/http://organico.splashingpixels.com/store/your-account/">Account</a>
+                                <div id="search_tab">
+                	<form class="searchform" method="get" action="/web/20130116145457/http://organico.splashingpixels.com/">
+						<fieldset>
+							<input type="text" value="Search Products" class="search" name="s">
+							<input type="hidden" name="post_type" value="wpsc_product">
+						</fieldset>
+					</form>
+                	<span class="tab">Tab</span>
+                </div><!--close search_tab-->
+            </div><!--close header_cart-->
+                        
+            <!--END HEADER CART-->                            
+        </div><!--close container-->
+    </div>
+	
 	<div class="layout-container <?php echo sp_site_layout(); ?>">
 	<?php do_action( 'sp_before_main_header_container' ); ?>
 	<header id="main-header">
@@ -38,7 +78,7 @@ global $page, $paged, $post;
 							if ( sp_get_option( 'show_social_media_icons', 'is', 'on' ) )
 								echo sp_social_media_profile_icons();
 
-							sp_get_menu( 'top-bar-menu' );
+							//sp_get_menu( 'top-bar-menu' );
 							?>
 						</div><!--close .column-->
 					</div><!--close .row-->
@@ -83,7 +123,7 @@ global $page, $paged, $post;
 			<div class="row">
 				<div class="<?php echo sp_column_css( '', '12', '', '9' ); ?>">
 					<!--PRIMARY MENU-->
-					<?php sp_get_menu( 'primary-menu' ); ?>
+					<?php //sp_get_menu( 'primary-menu' ); ?>
 					<!--END PRIMARY MENU-->
 
 					<a href="#" title="<?php _e( 'Toggle Menu', 'sp-theme' ); ?>" class="mobile-menu-button sp-tooltip" data-placement="top" data-toggle="tooltip"><i class="icon-reorder"></i></a>

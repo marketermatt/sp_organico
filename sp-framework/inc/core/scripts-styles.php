@@ -74,8 +74,16 @@ function _sp_scripts_styles() {
 	wp_enqueue_style( apply_filters( 'sp-theme-style', 'theme-style' ), get_stylesheet_uri() );
 
 	// register and enqueue site js
-	wp_register_script( apply_filters( 'sp_theme_js', 'theme_js' ), get_template_directory_uri() . '/js/main' . $suffix . '.js', null, THEME_VERSION, true );
-	wp_enqueue_script( apply_filters( 'sp_theme_js', 'theme_js' ) );		
+	wp_register_script( apply_filters( 'sp_theme_js', 'theme_js' ), get_template_directory_uri() . '/js/theme' . $suffix . '.js', null, THEME_VERSION, true );
+	wp_enqueue_script( apply_filters( 'sp_theme_js', 'theme_js' ) );	
+
+	// register pretty photo and enqueue site js
+	wp_register_script( apply_filters( 'sp_prettyphoto_js', 'prettyphoto_js' ), get_template_directory_uri() . '/js/jquery.prettyPhoto.js', null, THEME_VERSION, true );
+	wp_enqueue_script( apply_filters( 'sp_prettyphoto_js', 'prettyphoto_js' ) ); 
+
+	// register carouFredSel js
+	wp_register_script( apply_filters( 'sp_carouFredSel_js', 'carouFredSel_js' ), get_template_directory_uri() . '/js/jquery.carouFredSel-packed.js', null, THEME_VERSION, true );
+	wp_enqueue_script( apply_filters( 'sp_carouFredSel_js', 'carouFredSel_js' ) ); 	
 
 	// set variables if WOO plugin is active
 	( sp_woo_exists() ) ? $woo_active = true : $woo_active = false; 
