@@ -1095,3 +1095,109 @@ function sp_footer_phone_number_html() {
 	return $output;
 }
 endif;
+
+
+/* SP home page product slider*/
+
+function sp_home_product_slider()
+{
+	$output = '';
+	$output .= '<div id="home-slider">';
+	$output .= '<div class="caroufredsel_wrapper" style="display: block; text-align: start; float: none; position: relative; top: auto; right: auto; bottom: auto; left: auto; z-index: auto; width: 790px; height: 540px; margin: 0px 0px 0px 85px; overflow: hidden;">';
+	$output .= '<div id="slides" style="text-align: left; float: none; position: absolute; top: 0px; right: auto; bottom: auto; left: 0px; margin: 0px; width: 5530px; height: 540px; z-index: auto;">';
+	// if woocommerce plugin is active then
+	if ( class_exists( 'WooCommerce' ) ) {
+	$args = array(
+		'post_type' => 'product',
+		'posts_per_page' => 10
+		);
+	$loop = new WP_Query( $args );
+	if ( $loop->have_posts() ) {
+	while ( $loop->have_posts() ) : $loop->the_post();
+	$output .= '<div class="slide group">';
+	$output .= '<div class="product_description" style="display: block;">';
+	$output .= '<h2>'.get_the_title().'</h2>';
+	$output .= '<p></p><p>';
+	$output .= get_the_content();
+	$output .= '</p><p></p>';
+	$output .= '<div class="price">';
+	$sale = get_post_meta( get_the_ID(), '_regular_price', true);
+	$output .= '<p>'.$sale.'</p>';
+	$output .= '<p><a class="buynow" title="Buy Now" href="'.get_the_permalink().'">Buy Now</a></p>';	
+	$output .= '</div>';
+	$output .= '</div>';
+	$src = wp_get_attachment_image_src( get_post_thumbnail_id(get_the_ID())); 
+	$product_img = $src[0];
+	$output .= '<div class="featured_image">';
+	$output .= '<a title="Buy Now" href="'.get_the_permalink().'"><img width="500" height="500" alt="'.get_the_title().'" src="'.$product_img.'"></a>';
+	$output .= '</div>';
+	$output .= '</div>'; 
+	endwhile; // end while
+	} // if there are products
+	} // if woocommerce is activated
+	$output .= '</div>';
+	$output .= '</div>';
+	$output .= '<span class="left-arrow" style="display: block;">&lt;</span>
+	<span class="right-arrow" style="display: block;">&gt;</span>
+		<input type="hidden" class="homepage_slider_interval" value="8">                           
+		<input type="hidden" class="homepage_slider_effects" value="scroll"> 
+		<input type="hidden" class="homepage_slider_transition" value="500"> 
+		<input type="hidden" class="homepage_slider_easing" value="linear"> 
+		<input type="hidden" class="homepage_slider_pause" value="">   
+		<input type="hidden" class="homepage_slider_direction" value="left"> 
+		<input type="hidden" class="homepage_slider_touchswipe" value="">
+		<input class="homepage_slider_visible" type="hidden" value="4">';	
+	$output .= '</div>';
+	return $output;	
+}
+
+
+/* SP home page feature product slider*/
+
+function sp_home_feature_product_slider()
+{
+	$output = '';
+	$output .= '<div class="footer_slider">';
+	$output .= '<span class="footer-arrow-left" style="display: block;">&lt;</span>';
+	$output .= '<div class="caroufredsel_wrapper" style="display: block; text-align: start; float: none; position: relative; top: 0px; right: 0px; bottom: 0px; left: 0px; z-index: auto; width: 854px; height: 257px; margin: 0px; overflow: hidden;">';
+	$output .= '<ul class="group" style="text-align: left; float: none; position: absolute; top: 0px; right: auto; bottom: auto; left: 0px; margin: 0px;">';
+	// if woocommerce plugin is active then
+	if ( class_exists( 'WooCommerce' ) ) {
+	$args = array(
+		'post_type' => 'product',
+		'posts_per_page' => 10,
+		'meta_key' => '_featured',
+		'meta_value' => 'yes'
+		);
+	$loop = new WP_Query( $args );
+	if ( $loop->have_posts() ) {
+	while ( $loop->have_posts() ) : $loop->the_post();
+	$output .= '<li class="product-slide" style="margin-right: 19px;">';
+	$src = wp_get_attachment_image_src( get_post_thumbnail_id(get_the_ID())); 
+	$product_img = $src[0];
+	
+	$output .= '<a class="products" title="'.get_the_title().'" class="more" href="'.get_the_permalink().'"><img src="'.$product_img.'"></a>';
+	$output .= '<h2><a title="'.get_the_title().'" class="more" href="'.get_the_permalink().'">'.get_the_title().'</a></h2>';	
+	$output .= '<hr><a title="More Details" class="more" href="'.get_the_permalink().'"><span class="icon">&nbsp;</span>More Details</a>';	
+	$output .= '</li>'; 
+	endwhile; // end while
+	} // if there are products
+	} // if woocommerce is activated
+	$output .= '</ul>';
+	$output .= '</div>';
+	$output .= '<span class="footer-arrow-right" style="display: block;">&gt;</span>';
+	$output .= '<input class="footer_carousel_scroll_items" type="hidden" value="4">
+	<input class="footer_carousel_interval" type="hidden" value="8">
+	<input class="footer_carousel_speed" type="hidden" value="500">
+	<input class="footer_carousel_circular" type="hidden" value="true">
+	<input class="footer_carousel_easing" type="hidden" value="linear">
+	<input class="footer_carousel_reverse" type="hidden" value="">
+	<input class="footer_carousel_pauseonhover" type="hidden" value="true">
+	<input class="footer_carousel_effects" type="hidden" value="scroll">
+	<input class="footer_carousel_autoscrolldirection" type="hidden" value="left">
+	<input class="footer_carousel_infinite" type="hidden" value="true">
+	<input class="footer_carousel_touchwipe" type="hidden" value="">
+	<input class="footer_carousel_visible" type="hidden" value="4">';
+	$output .= '</div>';
+	return $output;	
+}

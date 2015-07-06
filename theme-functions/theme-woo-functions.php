@@ -68,11 +68,10 @@ function sp_woo_before_main_content() {
 	$output = '';
 
 	$output .= '<header class="page-header">' . PHP_EOL;
-	$output .= '<div class="container">' . PHP_EOL;
-	
+
 	ob_start();
 	woocommerce_page_title();
-	$output .= '<h1 class="page-title">' . ob_get_clean() . '</h1>' . PHP_EOL;
+	$output .= '<h1 class="entry-title">' . ob_get_clean() . '</h1>' . PHP_EOL;
 
 	// check breadcrumb setting
 	if ( sp_get_option( 'product_category_breadcrumbs', 'is', 'on' ) ) {
@@ -81,14 +80,13 @@ function sp_woo_before_main_content() {
 		$output .= ob_get_clean();
 	}
 
-	$output .= '</div><!--close .container-->' . PHP_EOL;
 	$output .= '</header><!--close .page-header -->' . PHP_EOL;
 
 	ob_start();
 	do_action( 'sp_woo_before_main_content_below_header' );
 	$output .= ob_get_clean();
 
-	$output .= '<div class="container main-container woocommerce-container" itemtype="http://schema.org/Product" itemscope>' . PHP_EOL;
+	$output .= '<div id="container" class="group sidebar-right" itemtype="http://schema.org/Product" itemscope>' . PHP_EOL;
 	$output .= '<div class="row ' . esc_attr( $orientation ) . '">' . PHP_EOL;
 
 	if ( $layout['sidebar_left'] )  {

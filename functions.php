@@ -30,3 +30,4 @@ if ( is_file( get_template_directory() . '/theme-functions/theme-functions.php' 
 if ( is_file( get_template_directory() . '/theme-functions/theme-woo-functions.php' ) && sp_woo_exists() ) {
 	require_once( get_template_directory() . '/theme-functions/theme-woo-functions.php' );
 }
+

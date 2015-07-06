@@ -105,14 +105,16 @@ if ( $view_type === 'list-view' && is_woocommerce() ) {
 	$content_wrap = '';
 }
 ?>
-<li <?php post_class( $classes ); ?>>
 
+<!-- new code starts here-->
+<div class="product_grid_item product_view_<?php echo get_the_ID(); ?>">
 	<?php do_action( 'woocommerce_before_shop_loop_item' ); ?>
-	<div class="image-wrap-column <?php echo esc_attr( $image_wrap_column ); ?>">
-	<div class="image-wrap <?php echo esc_attr( $quickview_class ); ?>" style="max-width:<?php echo esc_attr( $image_width ); ?>px;">
-	<a href="<?php the_permalink(); ?>" class="product-image-link">
-
-		<?php
+	
+	  <div class="inner_wrap">
+		<div class="item_image">
+			<a class="product-link" title="<?php the_title(); ?>" href="<?php the_permalink(); ?>">
+			
+			<?php
 			// get user set image width/height
 			$catalog_image_size = get_option( 'shop_catalog_image_size' );
 
@@ -129,77 +131,53 @@ if ( $view_type === 'list-view' && is_woocommerce() ) {
 
 			$image = sp_get_image( get_post_thumbnail_id( $product->id ), $catalog_image_size['width'], $catalog_image_size['height'], $catalog_image_size['crop'] );
 
-			/**
-			 * woocommerce_before_shop_loop_item_title hook
-			 *
-			 * @hooked woocommerce_show_product_loop_sale_flash - 10
-			 * @hooked woocommerce_template_loop_product_thumbnail - 10
-			 */
-			do_action( 'woocommerce_before_shop_loop_item_title' );
-
-			echo '<img src="' . esc_url( $image['url'] ) . '" alt="' . esc_attr( $image['alt'] ) . '" itemprop="image" class="attachment-shop_catalog wp-post-image lazyload" data-original="' . esc_url( $image['url'] ) . '" />' . PHP_EOL;
+			echo '<img src="' . esc_url( $image['url'] ) . '" alt="' . esc_attr( $image['alt'] ) . '" itemprop="image" width="200" height="200" class="product_image" data-original="' . esc_url( $image['url'] ) . '" />' . PHP_EOL;
 
 			if ( $product->is_on_sale() )
 				echo apply_filters( 'woocommerce_sale_flash', '<span class="onsale">' . __( 'Sale!', 'sp-theme' ) . '</span>', $post, $product );
 
 			if ( $show_alt_image )
-				echo '<img src="' . esc_attr( $alt_image['url'] ) . '" alt="' . esc_attr( $alt_image['alt'] ) . '" itemprop="image" class="alt-product-image" />' . PHP_EOL;
+				echo '<img src="' . esc_attr( $alt_image['url'] ) . '" alt="' . esc_attr( $alt_image['alt'] ) . '" itemprop="image" width="200" height="200" class="product_image" />' . PHP_EOL;
 		?>
-
-		<?php
-		if ( $show_quickview === 'on' )
-			echo '<span class="quickview-button"><i class="icon-list" aria-hidden="true"></i> ' . __( 'Quickview', 'sp-theme' ) . '</span>' . PHP_EOL;
-		?>
+			</a>
+			<?php
+			if ( $product->is_on_sale() )
+			{
+			?>	
+			<span class="saletag">Sale</span>
+			<?php } ?>
+			<a class="more" href="<?php the_permalink(); ?>" style="display: none;">
+				More Details
+			</a> 
+		</div><!--close item_image-->				
+		<div class="grid_product_info">							
+				<div class="price_container">
+				<p class="pricedisplay <?php get_the_ID(); ?>">
+				Old Price:
+				<span class="oldprice">
+				<?php 
+					$price = get_post_meta( get_the_ID(), '_regular_price',true);
+				?>
+				$<?php echo $price;?>
+				</span>
+				</p>
+				<p class="pricedisplay <?php get_the_ID(); ?>">
+				Price:
+				<span class="currentprice">
+				<?php 
+					$price = get_post_meta( get_the_ID(), '_regular_price',true);
+				?>
+				$<?php echo $price;?>
+				</span></p>
+				</div><!--close price_container-->
+		</div><!--close grid_product_info-->
+	</div><!--close inner_wrap-->	
+	<h2 class="prodtitle">
+	<input type="hidden" name="product_type" value="<?php echo esc_attr( $product_type ); ?>" />
+	<input type="hidden" name="product_id" value="<?php echo esc_attr( $product->id ); ?>" />
+	<a title="<?php the_title(); ?>" href="<?php the_permalink(); ?>">
+		<?php the_title(); ?>
 	</a>
-
-	<?php
-	// check add to cart on hover setting
-	if ( sp_get_option( 'show_add_to_cart_hover', 'is', 'on' ) )
-		$meta_class = 'on-hover';
-	else
-		$meta_class = '';
-	?>
-
-	<?php 
-	ob_start();
-	woocommerce_template_loop_add_to_cart(); 
-	$addtocart = ob_get_clean();
-	?>
-	
-	<div class="action-meta clearfix <?php echo esc_attr( $meta_class ); ?>">
-	<?php echo $addtocart; ?>
-	<?php echo sp_woo_product_meta_action_buttons_html( $product->id ); ?>
-	</div><!--close .action-meta-->
-	
-	</div><!--close .image-wrap-->
-	</div><!--close .image-wrap-column-->
-	
-	<div class="content-wrap <?php echo esc_attr( $content_wrap ); ?>">
-		<h3 class="product-title"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
-
-		<?php
-			/**
-			 * woocommerce_after_shop_loop_item_title hook
-			 *
-			 * @hooked woocommerce_template_loop_price - 10
-			 */
-			do_action( 'woocommerce_after_shop_loop_item_title' );
-		?>
-
-		<?php do_action( 'woocommerce_after_shop_loop_item' ); ?>
-		<?php
-		// check product type
-		$product_type = sp_has_product_add_ons( $product->id ) ? 'addons' : $product->product_type;
-		?>
-		<input type="hidden" name="product_type" value="<?php echo esc_attr( $product_type ); ?>" />
-		<input type="hidden" name="product_id" value="<?php echo esc_attr( $product->id ); ?>" />
-
-		<div class="list-view-content clearfix">
-			<?php woocommerce_template_single_excerpt(); ?>
-			<div class="action-meta clearfix <?php echo esc_attr( $meta_class ); ?>">
-			<?php echo $addtocart; ?>
-			<?php echo sp_woo_product_meta_action_buttons_html( $product->id ); ?>
-			</div><!--close .action-meta-->
-		</div><!--close .list-view-content-->
-	</div><!--close .content-wrap-->
-</li>
+	</h2>
+<!-- new code end for loop of products-->	
+</div>

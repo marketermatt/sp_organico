@@ -9,7 +9,7 @@
 			<div class="entry-content">
 				<?php the_content( __( 'Continue reading <span class="meta-nav">&rarr;</span>', 'sp-theme' ) ); ?>
 				<?php wp_link_pages( array( 'before' => '<div class="page-links">' . __( 'Pages:', 'sp-theme' ), 'after' => '</div>' ) ); ?>
-				<?php echo sp_display_social_media_buttons(); ?>
+				<?php //echo sp_display_social_media_buttons(); ?>
 			</div><!-- .entry-content -->
 			<?php endif; ?>
 

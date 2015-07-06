@@ -8,24 +8,9 @@ if ( is_sticky() )
 else
 	$sticky_class = '';
 ?>
-
-	<article id="post-<?php the_ID(); ?>" <?php post_class( $sticky_class ); ?>>
-		<?php if ( is_sticky() && is_home() && ! is_paged() ) : ?>
-		<h2 class="featured-post-title">
-			<?php _e( 'Featured post', 'sp-theme' ); ?>
-		</h2>
-		<?php endif; ?>
-		<header class="entry-header">
-			<?php if ( is_singular() ) { ?>
-				<h1 class="entry-title"><?php the_title(); ?></h1>
-			<?php } else { ?>
-				<h2 class="entry-title"><a href="<?php the_permalink(); ?>" title="<?php the_title_attribute(); ?>"><?php the_title(); ?></a></h2>
-			<?php } ?>
-			
-			<div class="header-entry-meta"><?php sp_post_header_entry_meta(); ?></div><!--close .entry-meta-->
-			
-		</header><!-- .entry-header -->
-		
+	<!-- new code starts-->
+	<article class="post-<?php the_ID(); ?> post type-post status-publish format-standard hentry category-articles tag-fresh tag-pepper tag-red group list" id="post-<?php the_ID(); ?>">
+		<div class="image-wrap">
 		<?php
 		// get featured video settings
 		$video = get_post_meta( $post->ID, '_sp_post_featured_video', true );
@@ -56,54 +41,83 @@ else
 				<?php } else { 
 					$image_src = wp_get_attachment_image_src( get_post_thumbnail_id( $post->ID ), 'thumbnail' );
 				?>
-					<a href="<?php the_permalink(); ?>" title="<?php the_title_attribute(); ?>" class="featured-image-link"><?php the_post_thumbnail( 'thumbnail', array( 'class' => 'lazyload', 'data-original' => $image_src[0] ) ); ?><span class="overlay"></span></a>
+					<a href="<?php the_permalink(); ?>" title="<?php the_title_attribute(); ?>" class="post-image-link"><?php the_post_thumbnail( 'thumbnail', array( 'class' => 'lazyload', 'data-original' => $image_src[0] ) ); ?><span class="more">Read More</span></a>
 				<?php } ?>
-			<?php } ?>
+			<?php } ?> 
 		<?php } ?>
-
-		<?php if ( is_search() || ! is_singular() ) : // Only display Excerpts for Search ?>
-		<div class="entry-summary">
-			<?php sp_show_post_content_excerpt(); ?>
-		</div><!-- .entry-summary -->
-		<?php else : ?>
-		<div class="entry-content clearfix">
-			<?php the_content(); ?>
-			<?php wp_link_pages( array( 'before' => '<div class="page-links">' . __( 'Pages:', 'sp-theme' ), 'after' => '</div>' ) ); ?>
-		</div><!-- .entry-content -->
-		<?php endif; ?>
-		
-		<div class="footer-entry-meta row">
-			<div class="<?php echo sp_column_css( '', '', '', '6' ); ?>">
-				<?php sp_post_footer_entry_meta(); ?>
-			</div><!--close .column-->
-
-			<div class="<?php echo sp_column_css( '', '', '', '6' ); ?>">
-				<?php echo sp_display_social_media_buttons(); ?>
-			</div><!--close .column-->
-		</div><!--close .footer-entry-meta-->
-
-		<footer>			
-		
-			<?php if ( is_singular() && get_the_author_meta( 'description' ) ) : ?>
-				<div class="author-info row">
-					
-					<div class="author-avatar <?php echo sp_column_css( '', '', '', '2' ); ?>">
-						<?php echo get_avatar( get_the_author_meta( 'user_email' ), apply_filters( 'sp_author_bio_avatar_size', 100 ) ); ?>
-					</div><!-- .author-avatar -->
-
-					<div class="author-description <?php echo sp_column_css( '', '', '', '10' ); ?>">
-						<h2><?php printf( __( 'About %s', 'sp-theme' ), get_the_author() ); ?></h2>
-
-						<p><?php the_author_meta( 'description' ); ?></p>
-						
-						<div class="author-link">
-							<a href="<?php echo esc_url( get_author_posts_url( get_the_author_meta( 'ID' ) ) ); ?>" rel="author">
-								<?php printf( __( 'View all posts by %s <i class="icon-angle-right"></i>', 'sp-theme' ), get_the_author() ); ?>
+                </div><!--close image-wrap-->   
+                <div class="post-meta">           
+			                <h2 class="entry-title">
+							<a data-rel="bookmark" title="Permalink to <?php the_title(); ?>" href="<?php the_permalink(); ?>">
+							<?php the_title(); ?>
 							</a>
-						</div><!-- .author-link	-->
-					</div><!-- .author-description -->
-				</div><!-- .author-info -->
-			<?php endif; ?>
-			<?php edit_post_link( __( 'Edit', 'sp-theme' ), '<span class="edit-link">', '</span>' ); ?>
-		</footer>
-	</article><!-- #post -->
+							</h2>
+                <div class="entry-meta group">
+                    <span class="calendar-icon">&nbsp;</span>
+					<a data-rel="bookmark" title="<?php the_time('Y-m-d | h:i:sa'); ?>" href="<?php the_permalink(); ?>"><time class="entry-date" datetime="<?php the_time('Y-m-d | h:i:sa'); ?>" pubdate=""><?php the_time('F j, Y'); ?></time></a> 
+					<span class="meta-sep">by</span>
+					<span class="author vcard">
+					<a title="View all posts by <?php get_the_author();?>" href="<?php get_the_author_link(); ?>" class="url fn n">
+					<?php echo get_the_author();?></a>
+					</span>
+					</div><!-- .entry-meta -->
+                <hr class="article-divider">
+                <div class="entry-summary">
+                	<p><?php the_excerpt(); ?></p>
+                </div><!-- .entry-summary -->
+            			<a class="more-link" title="Read More" href="<?php the_permalink(); ?>">
+						Read More 
+						<span class="icon">&nbsp;</span>
+						</a>
+            </div><!--close post-meta-->
+            <div class="entry-utility group">
+                <div class="group">&nbsp;</div>
+                <span class="article-icon">&nbsp;</span>
+				Posted in
+				<?php 
+				$categories = get_the_category();
+				foreach($categories as $category)
+				{
+				?>
+				<a rel="category tag" title="View all posts in <?php echo $category->name;?>" href="<?php echo get_category_link( $category->term_id );?>">
+				<?php echo $category->name;?>
+				</a>
+				<?php  } ?>
+				
+				<span class="tag-icon">&nbsp;</span>
+				Tags 
+				
+				<?php 
+				$posttags = get_the_tags();
+				foreach($posttags as $tags)
+				{
+				?>
+				<a rel="tag" href="<?php echo get_tag_link($tags->term_id);?>">
+				<?php echo $tags->name;?>
+				</a>,
+				<?php } ?>
+				<span class="bookmark-icon">&nbsp;</span>
+				Bookmark the 
+				<a data-rel="bookmark" title="Permalink to <?php the_title(); ?>" href="<?php the_permalink(); ?>">
+				permalink
+				</a>
+                <span class="comments-link">
+				<span class="comment-icon">&nbsp;</span>
+				<a title="Comment on <?php the_title(); ?>" href=" <?php comments_link(); ?> ">
+				<?php 
+				$comments_count = wp_count_comments();
+				if($comments_count->total_comment==0)
+				{
+					echo "0";
+				}
+				else
+				{
+					echo $comments_count->total_comment;
+				}
+				echo $comments_count->total_comment;
+				?> &nbsp;  Comments</a>
+				</span>
+        </div><!-- .entry-utility -->
+		</article>
+<!-- new code ends here-->
+<!-- #post -->
