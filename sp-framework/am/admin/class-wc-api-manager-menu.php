@@ -28,11 +28,13 @@ class API_Manager_Organico_theme_MENU {
 	// Add option page menu
 	public function add_menu() {
 
-	/* 	$page = add_options_page( __( AMET()->ame_settings_menu_title, AMET()->text_domain ), __( AMET()->ame_settings_menu_title, AMET()->text_domain ),
+		/*$page = add_options_page( __( AMET()->ame_settings_menu_title, AMET()->text_domain ), __( AMET()->ame_settings_menu_title, AMET()->text_domain ),
 						'manage_options', AMET()->ame_activation_tab_key, array( $this, 'config_page')
-		); */
+		);*/
 		
-		$page = add_submenu_page( 'index.php', __( AMET()->ame_settings_menu_title), __( AMET()->ame_settings_menu_title), 'manage_options', AMET()->ame_activation_tab_key, array( $this, 'config_page') );
+		$page = add_submenu_page( 'index.php', __( AMET()->ame_settings_menu_title), __( AMET()->ame_settings_menu_title), 'manage_options', AMET()->ame_activation_tab_key, array( $this, 'config_page') ); 
+		
+		
 		add_action( 'admin_print_styles-' . $page, array( $this, 'css_scripts' ) );
 	}
 
@@ -154,9 +156,10 @@ class API_Manager_Organico_theme_MENU {
 					'email' 		=> $api_email,
 					'licence_key' 	=> $api_key,
 					);
-
+				
 				$activate_results = json_decode( $this->api_manager_theme_organico_key->activate( $args ), true );
-
+				
+				
 				if ( $activate_results['activated'] === true ) {
 					add_settings_error( 'activate_text', 'activate_msg', __( 'Theme activated. ', AMET()->text_domain ) . "{$activate_results['message']}.", 'updated' );
 					update_option( AMET()->ame_activated_key, 'Activated' );

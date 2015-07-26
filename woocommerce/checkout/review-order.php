@@ -2,178 +2,214 @@
 /**
  * Review order form
  *
- * actual version 2.1.0
- *
  * @author 		WooThemes
  * @package 	WooCommerce/Templates
- * @version     5.0.0
+ * @version     1.6.4
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
+global $woocommerce;
+
+$available_methods = $woocommerce->shipping->get_available_shipping_methods();
 ?>
-<div id="order_review" class="clearfix">
-	
-	<div class="shop-table-container">
-		<table class="shop_table">
-			<thead>
-				<tr>
-					<th class="product-image"></th>
-					<th class="product-name"><?php _e( 'Product', 'sp-theme' ); ?></th>
-					<th class="product-unit-price"><?php _e( 'Unit Price', 'sp-theme' ); ?></th>
-					<th class="product-quantity"><?php _e( 'Quantity', 'sp-theme' ); ?></th>
-					<th class="product-subtotal"><?php _e( 'Subtotal', 'sp-theme' ); ?></th>
+<div id="order_review">
+
+	<table class="shop_table">
+		<thead>
+			<tr>
+				<th class="product-name"><?php _e( 'Product', 'sp' ); ?></th>
+				<th class="product-total"><?php _e( 'Total', 'sp' ); ?></th>
+			</tr>
+		</thead>
+		<tfoot>
+			<tr class="cart-subtotal">
+				<th><?php _e( 'Cart Subtotal', 'sp' ); ?></th>
+				<td><?php echo $woocommerce->cart->get_cart_subtotal(); ?></td>
+			</tr>
+
+			<?php if ( $woocommerce->cart->get_discounts_before_tax() ) : ?>
+
+			<tr class="discount">
+				<th><?php _e( 'Cart Discount', 'sp' ); ?></th>
+				<td>-<?php echo $woocommerce->cart->get_discounts_before_tax(); ?></td>
+			</tr>
+
+			<?php endif; ?>
+
+			<?php if ( $woocommerce->cart->needs_shipping() && $woocommerce->cart->show_shipping() ) : ?>
+
+				<?php do_action('woocommerce_review_order_before_shipping'); ?>
+
+				<tr class="shipping">
+					<th><?php _e( 'Shipping', 'sp' ); ?></th>
+					<td><?php woocommerce_get_template( 'cart/shipping-methods.php', array( 'available_methods' => $available_methods ) ); ?></td>
 				</tr>
-			</thead>
 
-			<tbody>
-				<?php
-					do_action( 'woocommerce_review_order_before_cart_contents' );
+				<?php do_action('woocommerce_review_order_after_shipping'); ?>
 
-					foreach ( WC()->cart->get_cart() as $cart_item_key => $cart_item ) {
-						$_product = apply_filters( 'woocommerce_cart_item_product', $cart_item['data'], $cart_item, $cart_item_key );
-						$image = sp_get_image( get_post_thumbnail_id( $_product->id ), 60, 60, true );
+			<?php endif; ?>
 
-						$product_price = get_option('woocommerce_tax_display_cart') == 'excl' ? $_product->get_price_excluding_tax() : $_product->get_price_including_tax();
-						
-						if ( $_product && $_product->exists() && $cart_item['quantity'] > 0 && apply_filters( 'woocommerce_checkout_cart_item_visible', true, $cart_item, $cart_item_key ) ) {
+			<?php foreach ( $woocommerce->cart->get_fees() as $fee ) : ?>
+
+				<tr class="fee fee-<?php echo $fee->id ?>">
+					<th><?php echo $fee->name ?></th>
+					<td><?php
+						if ( $woocommerce->cart->tax_display_cart == 'excl' )
+							echo woocommerce_price( $fee->amount );
+						else
+							echo woocommerce_price( $fee->amount + $fee->tax );
+					?></td>
+				</tr>
+
+			<?php endforeach; ?>
+
+			<?php
+				// Show the tax row if showing prices exlcusive of tax only
+				if ( $woocommerce->cart->tax_display_cart == 'excl' ) {
+
+					$taxes = $woocommerce->cart->get_formatted_taxes();
+
+					if ( sizeof( $taxes ) > 0 ) {
+
+						$has_compound_tax = false;
+
+						foreach ( $taxes as $key => $tax ) {
+							if ( $woocommerce->cart->tax->is_compound( $key ) ) {
+								$has_compound_tax = true;
+								continue;
+							}
 							?>
-							<tr class="<?php echo esc_attr( apply_filters( 'woocommerce_cart_item_class', 'cart_item', $cart_item, $cart_item_key ) ); ?>">
-								<td class="product-image"><img src="<?php echo esc_url( $image['url'] ); ?>" alt="<?php echo esc_attr( $image['alt'] ); ?>" /></td>
-								<td class="product-name">
-									<?php echo apply_filters( 'woocommerce_cart_item_name', $_product->get_title(), $cart_item, $cart_item_key ); ?>
-									
-									<?php echo WC()->cart->get_item_data( $cart_item ); ?>
-								</td>
-								<td class="product-price">
-									<?php echo apply_filters('woocommerce_cart_item_price_html', woocommerce_price( $product_price ), $cart_item, $cart_item_key ); ?>
-								</td>
-								<td class="product-quantity">
-									<?php echo apply_filters( 'woocommerce_checkout_cart_item_quantity', ' <strong class="product-quantity">' . sprintf( '&times; %s', $cart_item['quantity'] ) . '</strong>', $cart_item, $cart_item_key ); ?>
-								</td>
-								<td class="product-total">
-									<?php echo apply_filters( 'woocommerce_cart_item_subtotal', WC()->cart->get_product_subtotal( $_product, $cart_item['quantity'] ), $cart_item, $cart_item_key ); ?>
-								</td>
+							<tr class="tax-rate tax-rate-<?php echo $key; ?>">
+								<th><?php echo $woocommerce->cart->tax->get_rate_label( $key ); ?></th>
+								<td><?php echo $tax; ?></td>
 							</tr>
 							<?php
 						}
-					}
 
-					do_action( 'woocommerce_review_order_after_cart_contents' );
-				?>
-			</tbody>
-		</table>
-	</div><!--close .shop-table-container-->
-
-	<div class="row">
-		<div class="<?php echo sp_column_css( '12', '7', '8', '8' ); ?>">
-			<?php
-			// get saved values
-			$image_upload = sp_get_option( 'checkout_secured_image' );
-			$ssl_seal = sp_get_option( 'checkout_secured_code' );
-
-			if ( isset( $ssl_seal ) && ! empty( $ssl_seal ) ) {
-			?>
-				<div class="checkout-ssl-seal">
-					<?php echo apply_filters( 'sp_woo_checkout_secure_icon', '<p class="lock"><i class="icon-locked" aria-hidden="true"></i> ' . __( 'SECURED CHECKOUT', 'sp-theme' ) ) . '</p>'; ?>
-					<?php echo $ssl_seal; ?>
-				</div><!--close .checkout-ssl-seal-->
-			<?php
-			} else {
-				if ( isset( $image_upload ) && ! empty( $image_upload ) )
-					// check for ssl
-					if ( is_ssl() )
-						$image_upload = str_replace( 'http', 'https', $image_upload );
-				?>
-					<div class="checkout-ssl-seal">
-						<?php echo apply_filters( 'sp_woo_checkout_secure_icon', '<p class="lock"><i class="icon-locked" aria-hidden="true"></i> ' . __( 'SECURED CHECKOUT', 'sp-theme' ) ) . '</p>'; ?>
-						<img src="<?php echo esc_url( $image_upload ); ?>" alt="<?php esc_attr_e( 'SSL SEAL', 'sp-theme' ); ?>" />
-					</div><!--close .checkout-ssl-seal-->
-			<?php
-			}
-			?>
-		</div><!--close .column-->
-
-		<div class="summary-column <?php echo sp_column_css( '12', '5', '4', '4' ); ?>">
-			<table class="summary">
-				<tr class="cart-subtotal">
-					<th><?php _e( 'Cart Subtotal', 'sp-theme' ); ?></th>
-					<td><?php wc_cart_totals_subtotal_html(); ?></td>
-				</tr>
-
-				<?php foreach ( WC()->cart->get_coupons( 'cart' ) as $code => $coupon ) : ?>
-					<tr class="discount cart-discount coupon-<?php echo esc_attr( $code ); ?>">
-						<th><?php _e( 'Coupon:', 'sp-theme' ); ?> <?php echo esc_html( $code ); ?></th>
-						<td><?php wc_cart_totals_coupon_html( $coupon ); ?></td>
-					</tr>
-				<?php endforeach; ?>
-
-				<?php if ( WC()->cart->needs_shipping() && WC()->cart->show_shipping() ) : ?>
-
-					<?php do_action('woocommerce_review_order_before_shipping'); ?>
-
-					<?php wc_cart_totals_shipping_html(); ?>
-
-					<?php do_action('woocommerce_review_order_after_shipping'); ?>
-
-				<?php endif; ?>
-
-				<?php foreach ( WC()->cart->get_fees() as $fee ) : ?>
-
-					<tr class="fee">
-						<th><?php echo esc_html( $fee->name ); ?></th>
-						<td><?php wc_cart_totals_fee_html( $fee ); ?></td>
-					</tr>
-
-				<?php endforeach; ?>
-
-				<?php if ( WC()->cart->tax_display_cart == 'excl' ) : ?>
-					<?php if ( get_option( 'woocommerce_tax_total_display' ) == 'itemized' ) : ?>
-						<?php foreach ( WC()->cart->get_tax_totals() as $code => $tax ) : ?>
-							<tr class="tax-rate tax-rate-<?php echo sanitize_title( $code ); ?>">
-								<th><?php echo esc_html( $tax->label ); ?></th>
-								<td><?php echo wp_kses_post( $tax->formatted_amount ); ?></td>
+						if ( $has_compound_tax ) {
+							?>
+							<tr class="order-subtotal">
+								<th><?php _e( 'Subtotal', 'sp' ); ?></th>
+								<td><?php echo $woocommerce->cart->get_cart_subtotal( true ); ?></td>
 							</tr>
-						<?php endforeach; ?>
-					<?php else : ?>
-						<tr class="tax-total">
-							<th><?php echo esc_html( WC()->countries->tax_or_vat() ); ?></th>
-							<td><?php echo wc_price( WC()->cart->get_taxes_total() ); ?></td>
+							<?php
+						}
+
+						foreach ( $taxes as $key => $tax ) {
+							if ( ! $woocommerce->cart->tax->is_compound( $key ) )
+								continue;
+							?>
+							<tr class="tax-rate tax-rate-<?php echo $key; ?>">
+								<th><?php echo $woocommerce->cart->tax->get_rate_label( $key ); ?></th>
+								<td><?php echo $tax; ?></td>
+							</tr>
+							<?php
+						}
+
+					} elseif ( $woocommerce->cart->get_cart_tax() ) {
+						?>
+						<tr class="tax">
+							<th><?php _e( 'Tax', 'sp' ); ?></th>
+							<td><?php echo $woocommerce->cart->get_cart_tax(); ?></td>
 						</tr>
-					<?php endif; ?>
-				<?php endif; ?>
+						<?php
+					}
+				}
+			?>
 
-				<?php foreach ( WC()->cart->get_coupons( 'order' ) as $code => $coupon ) : ?>
-					<tr class="order-discount coupon-<?php echo esc_attr( $code ); ?>">
-						<th><?php _e( 'Coupon:', 'sp-theme' ); ?> <?php echo esc_html( $code ); ?></th>
-						<td><?php wc_cart_totals_coupon_html( $coupon ); ?></td>
-					</tr>
-				<?php endforeach; ?>
+			<?php if ($woocommerce->cart->get_discounts_after_tax()) : ?>
 
-				<?php do_action( 'woocommerce_review_order_before_order_total' ); ?>
+			<tr class="discount">
+				<th><?php _e( 'Order Discount', 'sp' ); ?></th>
+				<td>-<?php echo $woocommerce->cart->get_discounts_after_tax(); ?></td>
+			</tr>
 
-				<tr class="total order-total">
-					<th><strong><?php _e( 'Order Total', 'sp-theme' ); ?></strong></th>
-					<td><?php wc_cart_totals_order_total_html(); ?></td>
-				</tr>
+			<?php endif; ?>
 
-				<?php do_action( 'woocommerce_review_order_after_order_total' ); ?>
-			</table>
-		</div><!--close .column-->
-	</div><!--close .row-->
-	
-	<?php do_action( 'woocommerce_review_order_before_payment' ); ?>
+			<?php do_action( 'woocommerce_review_order_before_order_total' ); ?>
 
+			<tr class="total">
+				<th><strong><?php _e( 'Order Total', 'sp' ); ?></strong></th>
+				<td>
+					<strong><?php echo $woocommerce->cart->get_total(); ?></strong>
+					<?php
+						// If prices are tax inclusive, show taxes here
+						if ( $woocommerce->cart->tax_display_cart == 'incl' ) {
+							$tax_string_array = array();
+							$taxes = $woocommerce->cart->get_formatted_taxes();
+
+							if ( sizeof( $taxes ) > 0 ) {
+								foreach ( $taxes as $key => $tax ) {
+									$tax_string_array[] = sprintf( '%s %s', $tax, $woocommerce->cart->tax->get_rate_label( $key ) );
+								}
+							} elseif ( $woocommerce->cart->get_cart_tax() ) {
+								$tax_string_array[] = sprintf( '%s tax', $tax );
+							}
+
+							if ( ! empty( $tax_string_array ) ) {
+								?><small class="includes_tax"><?php printf( __( '(Includes %s)', 'sp' ), implode( ', ', $tax_string_array ) ); ?></small><?php
+							}
+						}
+					?>
+				</td>
+			</tr>
+
+			<?php do_action( 'woocommerce_review_order_after_order_total' ); ?>
+
+		</tfoot>
+		<tbody>
+			<?php
+				do_action( 'woocommerce_review_order_before_cart_contents' );
+
+				if (sizeof($woocommerce->cart->get_cart())>0) :
+					foreach ($woocommerce->cart->get_cart() as $cart_item_key => $values) :
+						$_product = $values['data'];
+						if ($_product->exists() && $values['quantity']>0) :
+							echo '
+								<tr class="' . esc_attr( apply_filters('woocommerce_checkout_table_item_class', 'checkout_table_item', $values, $cart_item_key ) ) . '">
+									<td class="product-name">' .
+										apply_filters( 'woocommerce_checkout_product_title', $_product->get_title(), $_product ) . ' ' .
+										apply_filters( 'woocommerce_checkout_item_quantity', '<strong class="product-quantity">&times; ' . $values['quantity'] . '</strong>', $values, $cart_item_key ) .
+										$woocommerce->cart->get_item_data( $values ) .
+									'</td>
+									<td class="product-total">' . apply_filters( 'woocommerce_checkout_item_subtotal', $woocommerce->cart->get_product_subtotal( $_product, $values['quantity'] ), $values, $cart_item_key ) . '</td>
+								</tr>';
+						endif;
+					endforeach;
+				endif;
+
+				do_action( 'woocommerce_review_order_after_cart_contents' );
+			?>
+		</tbody>
+	</table>
+	<div id="secured-wrap">
+	<?php if (sp_isset_option( 'checkout_secured_icon', 'boolean', 'true' )) { ?>   
+			<span class="secured-icon">&nbsp;</span>
+	    <p><?php _e('SECURED CHECKOUT','sp'); ?></p>
+	<?php } ?>
+			<?php if ( sp_isset_option( 'checkout_secured_code', 'isset' ) && strlen( (string)sp_isset_option( 'checkout_secured_code', 'value' ) ) ) { ?>
+	    	<div class="code"><?php echo sp_isset_option( 'checkout_secured_code', 'value' ); ?></div>
+	    <?php } else { ?>
+			<?php if ( sp_isset_option( 'checkout_secured_image', 'isset' ) && strlen( (string)sp_isset_option( 'checkout_secured_image', 'value' ) ) ) { 
+				$image_url = sp_isset_option( 'checkout_secured_image', 'value' );
+				if (is_ssl()) 
+					$image_url = str_replace('http', 'https', $image_url);
+	?>
+	    		<img src="<?php echo $image_url; ?>" alt="Secured" />
+	    	<?php } ?>
+			<?php } ?> 
+	</div><!--close secured-wrap-->	
 	<div id="payment">
-		<?php if (WC()->cart->needs_payment()) : ?>
+		<?php if ($woocommerce->cart->needs_payment()) : ?>
 		<ul class="payment_methods methods">
 			<?php
-				$available_gateways = WC()->payment_gateways->get_available_payment_gateways();
+				$available_gateways = $woocommerce->payment_gateways->get_available_payment_gateways();
 				if ( ! empty( $available_gateways ) ) {
 
 					// Chosen Method
-					if ( isset( WC()->session->chosen_payment_method ) && isset( $available_gateways[ WC()->session->chosen_payment_method ] ) ) {
-						$available_gateways[ WC()->session->chosen_payment_method ]->set_current();
+					if ( isset( $woocommerce->session->chosen_payment_method ) && isset( $available_gateways[ $woocommerce->session->chosen_payment_method ] ) ) {
+						$available_gateways[ $woocommerce->session->chosen_payment_method ]->set_current();
 					} elseif ( isset( $available_gateways[ get_option( 'woocommerce_default_gateway' ) ] ) ) {
 						$available_gateways[ get_option( 'woocommerce_default_gateway' ) ]->set_current();
 					} else {
@@ -197,10 +233,10 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 					}
 				} else {
 
-					if ( ! WC()->customer->get_country() )
-						echo '<p>' . __( 'Please fill in your details above to see available payment methods.', 'sp-theme' ) . '</p>';
+					if ( ! $woocommerce->customer->get_country() )
+						echo '<p>' . __( 'Please fill in your details above to see available payment methods.', 'sp' ) . '</p>';
 					else
-						echo '<p>' . __( 'Sorry, it seems that there are no available payment methods for your state. Please contact us if you require assistance or wish to make alternate arrangements.', 'sp-theme' ) . '</p>';
+						echo '<p>' . __( 'Sorry, it seems that there are no available payment methods for your state. Please contact us if you require assistance or wish to make alternate arrangements.', 'sp' ) . '</p>';
 
 				}
 			?>
@@ -209,44 +245,27 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 		<div class="form-row place-order">
 
-			<noscript><?php _e( 'Since your browser does not support JavaScript, or it is disabled, please ensure you click the <em>Update Totals</em> button before placing your order. You may be charged more than the amount stated above if you fail to do so.', 'sp-theme' ); ?><br/><input type="submit" class="button alt" name="woocommerce_checkout_update_totals" value="<?php _e( 'Update totals', 'sp-theme' ); ?>" /></noscript>
+			<noscript><?php _e( 'Since your browser does not support JavaScript, or it is disabled, please ensure you click the <em>Update Totals</em> button before placing your order. You may be charged more than the amount stated above if you fail to do so.', 'sp' ); ?><br/><input type="submit" class="button alt" name="woocommerce_checkout_update_totals" value="<?php _e( 'Update totals', 'sp' ); ?>" /></noscript>
 
-			<?php wp_nonce_field( 'woocommerce-process_checkout'); ?>
+			<?php $woocommerce->nonce_field('process_checkout')?>
 
 			<?php do_action( 'woocommerce_review_order_before_submit' ); ?>
-			
-			<div class="clearfix">
-				<div class="pull-right">
-				<?php
-				$order_button_text = apply_filters('woocommerce_order_button_text', __( 'Place order', 'sp-theme' ));
 
-				echo apply_filters('woocommerce_order_button_html', '<input type="submit" class="button alt" name="woocommerce_checkout_place_order" id="place_order" value="' . esc_attr( $order_button_text ) . '" data-value="' . esc_attr( $order_button_text ) . '" />' );
-				?>
-					
-				</div><!--close .column-->
+			<div class="input-button-buy"><span><input type="submit" class="button alt" name="woocommerce_checkout_place_order" id="place_order" value="<?php echo apply_filters('woocommerce_order_button_text', __('Place order', 'sp')); ?>" /></span></div>
 
-				<div class="pull-right">
+			<?php if (woocommerce_get_page_id('terms')>0) : ?>
+			<p class="form-row terms">
+				<label for="terms" class="checkbox"><?php _e( 'I have read and accept the', 'sp' ); ?> <a href="<?php echo esc_url( get_permalink(woocommerce_get_page_id('terms')) ); ?>" target="_blank"><?php _e( 'terms &amp; conditions', 'sp' ); ?></a></label>
+				<input type="checkbox" class="input-checkbox" name="terms" <?php checked( isset( $_POST['terms'] ), true ); ?> id="terms" />
+			</p>
+			<?php endif; ?>
 
-			<?php if ( wc_get_page_id( 'terms' ) > 0 && apply_filters( 'woocommerce_checkout_show_terms', true ) ) { 
-				$terms_is_checked = apply_filters( 'woocommerce_terms_is_checked_default', isset( $_POST['terms'] ) );
-				?>
-				<p class="form-row terms">
-					<label for="terms" class="checkbox"><?php _e( 'I have read and accept the', 'sp-theme' ); ?> <a href="<?php echo esc_url( get_permalink(woocommerce_get_page_id('terms')) ); ?>" target="_blank"><?php _e( 'terms &amp; conditions', 'sp-theme' ); ?></a></label>
-					<input type="checkbox" class="input-checkbox" name="terms" <?php checked( $terms_is_checked, true ); ?> id="terms" />
-				</p>
-			<?php } ?>
-				
-				<?php do_action( 'woocommerce_review_order_after_submit' ); ?>
-				</div><!--close .column-->
+			<?php do_action( 'woocommerce_review_order_after_submit' ); ?>
 
-
-			</div><!--close .row-->
 		</div>
 
-		<div class="clear"></div>
+		<div class="group"></div>
 
 	</div>
-	
-	<?php do_action( 'woocommerce_review_order_after_payment' ); ?>
 
 </div>

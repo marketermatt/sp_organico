@@ -1,65 +1,94 @@
 <?php
 /**
  * Single Product Thumbnails
- *
- * actual version 2.0.3
- *
- * @author 		WooThemes
- * @package 	WooCommerce/Templates
- * @version     5.0.0
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
-
-global $post, $product, $woocommerce;
+global $post, $woocommerce, $product, $main_image_height;
 
 $attachment_ids = $product->get_gallery_attachment_ids();
 
-// get image swap value
-$image_swap = sp_get_option( 'product_image_gallery_swap' );
+// get image sizes
+// if less than 2.0
+if ( version_compare( WOOCOMMERCE_VERSION, '2.0', '<' ) ) {
+	$image_thumb_width = get_option( 'woocommerce_thumbnail_image_width' );
+	$image_thumb_height = get_option( 'woocommerce_thumbnail_image_height' );
+} else {
+	$image_sizes = $woocommerce->get_image_size( 'shop_thumbnail' );
+	$image_thumb_width = $image_sizes['width'];
+	$image_thumb_height = $image_sizes['height'];
+}
 
-if ( $attachment_ids ) {
-	?>
-	<div class="thumbnails"><?php
-
-		// run if image swap is on
-		if ( $image_swap === 'on' ) {
-			$main_attachment_id = get_post_thumbnail_id( $post->ID );
-			$main_image_class = array( 'zoom' );
-			$main_image = wp_get_attachment_image( $main_attachment_id, apply_filters( 'single_product_small_thumbnail_size', 'shop_thumbnail' ) );
-			$main_image_link = wp_get_attachment_url( $main_attachment_id );
-			$main_image_title = esc_attr( get_the_title( $main_attachment_id ) );
-
-			echo apply_filters( 'woocommerce_single_product_image_thumbnail_html', sprintf( '<a href="%s" class="%s" title="%s">%s</a>', $main_image_link, $main_image_class, $main_image_title, $main_image ), $main_attachment_id, $post->ID, $main_image_class );	
-		}
-
-		$loop = 0;
-		$columns = apply_filters( 'woocommerce_product_thumbnails_columns', 3 );
-
+if ( sp_isset_option( 'show_gallery', 'boolean', 'true' ) ) {
+	$featured_image = sp_get_image( $post->ID );
+	
+	if ( $attachment_ids ) { ?>
+		<div class="wpcart_gallery group">
+        <?php
+		$i = 1;
 		foreach ( $attachment_ids as $attachment_id ) {
+			$link = wp_get_attachment_url( $attachment_id );
+			
+			if ( ! sp_is_single_product_page() ) {
+	
+				$sizes = sp_quickview_image_size( $link );
+				$image_width = $sizes['image_width'];
+				$image_height = $sizes['image_height'];
 
-			$classes = array( 'zoom' );
+			} else {
+				
+				// if less than 2.0
+				if ( version_compare( WOOCOMMERCE_VERSION, '2.0', '<' ) ) {	
+					$image_width = get_option( 'woocommerce_single_image_width' );
+					$image_height = get_option( 'woocommerce_single_image_height' );
+				} else {			
+					$image_sizes = $woocommerce->get_image_size( 'shop_single' );
+					$image_width = $image_sizes['width'];
+					$image_height = $image_sizes['height'];
+				}
+				
+			}
+			// display the featured image thumbnail first
+			if ( $i <= 1 ) {
 
-			if ( $loop == 0 || $loop % $columns == 0 )
-				$classes[] = 'first';
+				if ( ! sp_is_single_product_page() ) {
+					
+					$sizes = sp_quickview_image_size( $featured_image );
+					$image_width = $sizes['image_width'];
+					$image_height = $sizes['image_height'];
+					
+				} else {
+					
+					// if less than 2.0
+					if ( version_compare( WOOCOMMERCE_VERSION, '2.0', '<' ) ) {	
+						$image_width = get_option( 'woocommerce_single_image_width' );
+						$image_height = get_option( 'woocommerce_single_image_height' );
+					} else {			
+						$image_sizes = $woocommerce->get_image_size( 'shop_single' );
+						$image_width = $image_sizes['width'];
+						$image_height = $image_sizes['height'];
+					}
+					
+				}
+				
+				if ( sp_isset_option( 'woo_image_swap', 'boolean', 'true' ) ) {
+						echo '<a href="'.$featured_image.'" title="'.get_the_title( $attachment->ID ).'" class="thickbox preview_link" data-src="'.sp_timthumb_format( 'single_main', $featured_image, $image_width, $main_image_height ) .'" data-rel="prettyPhoto['.$post->ID.']" onclick="return false;"><img src="'.sp_timthumb_format( 'single_gallery', $featured_image, $image_thumb_width, $image_thumb_height ) .'" alt="'.get_the_title( $attachment->ID ).'" width="'.$image_thumb_width.'" height="'.$image_thumb_height.'" class="sp-attachment-thumbnails" /></a>';
+					} else {
+						echo '<a href="'.$featured_image.'" title="'.get_the_title( $attachment->ID ).'" class="thickbox preview_link" data-src="'.sp_timthumb_format( 'single_main', $featured_image, $image_width, $main_image_height ) .'" data-rel="prettyPhoto['.$post->ID.']" onclick="return false;"><img src="'.sp_timthumb_format( 'single_gallery', $featured_image, $image_thumb_width, $image_thumb_height ) .'" alt="'.get_the_title( $attachment->ID ).'" width="'.$image_thumb_width.'" height="'.$image_thumb_height.'" /></a>';
+					}
+				}
 
-			if ( ( $loop + 1 ) % $columns == 0 )
-				$classes[] = 'last';
-
-			$image_link = wp_get_attachment_url( $attachment_id );
-
-			if ( ! $image_link )
-				continue;
-
-			$image       = wp_get_attachment_image( $attachment_id, apply_filters( 'single_product_small_thumbnail_size', 'shop_thumbnail' ) );
-			$image_class = esc_attr( implode( ' ', $classes ) );
-			$image_title = esc_attr( get_the_title( $attachment_id ) );
-
-			echo apply_filters( 'woocommerce_single_product_image_thumbnail_html', sprintf( '<a href="%s" class="%s" title="%s">%s</a>', $image_link, $image_class, $image_title, $image ), $attachment_id, $post->ID, $image_class );
-
-			$loop++;
+				if ( get_post_meta( $attachment->ID, '_woocommerce_exclude_image', true ) == 1 ) 
+					continue;
+				
+				if ( sp_isset_option( 'woo_image_swap', 'boolean', 'true' ) ) {	
+					echo '<a href="'.$link.'" title="'.get_the_title( $attachment->ID ).'" class="thickbox preview_link" data-src="'.sp_timthumb_format( 'single_main', $link, $image_width, $main_image_height ) .'" data-rel="prettyPhoto['.$post->ID.']" onclick="return false;"><img src="'.sp_timthumb_format( 'single_gallery', $link, $image_thumb_width, $image_thumb_height ) .'" alt="'.get_the_title( $attachment->ID ).'" width="'.$image_thumb_width.'" height="'.$image_thumb_height.'" class="sp-attachment-thumbnails" /></a>';
+				} else {
+					echo '<a href="'.$link.'" title="'.get_the_title( $attachment->ID ).'" class="thickbox preview_link" data-src="'.sp_timthumb_format( 'single_main', $link, $image_width, $main_image_height ) .'" data-rel="prettyPhoto['.$post->ID.']" onclick="return false;"><img src="'.sp_timthumb_format( 'single_gallery', $link, $image_thumb_width, $image_thumb_height ) .'" alt="'.get_the_title( $attachment->ID ).'" width="'.$image_thumb_width.'" height="'.$image_thumb_height.'" /></a>';
+				}
+			$i++;
 		}
-
-	?></div>
-	<?php
+		?>
+		</div><!--close wpcart_gallery-->
+<?php        
+	}
 }

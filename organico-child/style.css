@@ -1,0 +1,22 @@
+/*
+Theme Name: Organico
+Theme URI: http://organico.splashingpixels.com
+Description: An "green", organic style style e-commerce theme.
+Author: Splashing Pixels
+Author URI: http://splashingpixels.com
+Version: 2.2.4
+Template: organico
+Tags: light-green, sage, organic, responsive, clean, 1-column, 2-columns, 3-columns, e-commerce, fixed-width, 960
+
+License: GNU General Public License v2.0
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+*/
+
+/*-----
+
+DO NOT EDIT!
+
+To add in your own CSS styles, it is recommended that you create a file called custom_styles.css in your child theme folder and the framework will automatically apply your CSS changes.  If you need more information, please visit the support forums at http://splashingpixels.com
+----*/
+
+@import url("../organico/style.css");

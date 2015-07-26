@@ -10,7 +10,7 @@ add_filter( 'widget_text', 'do_shortcode' );
 
 // generate Google Plus 1 Button
 // one argument passed in to determine the URL to be set to post or product or custom [sp_gplusone url=""]
-function sp_organico_gplusonebutton_shortcode( $atts, $content = null ) 
+function sp_gplusonebutton_shortcode( $atts, $content = null ) 
 {
 	extract( shortcode_atts( array(  
          'url' => '',
@@ -69,7 +69,7 @@ function sp_organico_gplusonebutton_shortcode( $atts, $content = null )
 		
 		return $output;
 }
-add_shortcode( 'sp_gplusone', 'sp_organico_gplusonebutton_shortcode' );
+add_shortcode( 'sp_gplusone', 'sp_gplusonebutton_shortcode' );
 
 // gplusone script function
 function sp_gplusone_script()
@@ -85,7 +85,7 @@ function sp_gplusone_script()
 
 // generate FB Like button
 // one argument passed in to determine the URL to be set to post or product or custom [sp_fblike url=""]
-function sp_organico_fblikebutton_shortcode( $atts, $content = null ) 
+function sp_fblikebutton_shortcode( $atts, $content = null ) 
 {
 	extract( shortcode_atts( array(  
          'url' => ''  
@@ -103,10 +103,10 @@ function sp_organico_fblikebutton_shortcode( $atts, $content = null )
 		
 		return $output;
 }
-add_shortcode( 'sp_fblike','sp_organico_fblikebutton_shortcode' );
+add_shortcode( 'sp_fblike','sp_fblikebutton_shortcode' );
 
 // generate Twitter Tweet button
-function sp_organico_tweetbutton_shortcode( $atts, $content = null ) 
+function sp_tweetbutton_shortcode( $atts, $content = null ) 
 {
 	extract( shortcode_atts( array(  
          'url' => ''  
@@ -122,25 +122,25 @@ function sp_organico_tweetbutton_shortcode( $atts, $content = null )
 		
 		return $output;
 }
-add_shortcode( 'sp_tweet', 'sp_organico_tweetbutton_shortcode' );
+add_shortcode( 'sp_tweet', 'sp_tweetbutton_shortcode' );
 
 // shortcode to output the site root URL [sp_home_path]
-function sp_organico_home() 
+function sp_home() 
 {
 	return home_url() . "/";
 }
-add_shortcode( 'sp_home_path', 'sp_organico_home' );
+add_shortcode( 'sp_home_path', 'sp_home' );
 
 // shortcode to output the current theme URL [sp_theme_path]
-function sp_organico_theme() 
+function sp_theme() 
 {
 	return get_template_directory_uri() . "/";
 }
-add_shortcode( 'sp_theme_path', 'sp_organico_theme' );
+add_shortcode( 'sp_theme_path', 'sp_theme' );
 
 // new grid shortcode
-add_shortcode( 'sp_grid', 'sp_organico_grid_shortcode' );
-function sp_organico_grid_shortcode( $atts, $content = null ) 
+add_shortcode( 'sp_grid', 'sp_grid_shortcode' );
+function sp_grid_shortcode( $atts, $content = null ) 
 {
 	extract( shortcode_atts( array(
 	'span' => 'one_half',
@@ -156,10 +156,10 @@ function sp_organico_grid_shortcode( $atts, $content = null )
 	return $output;
 }
 // change default WP image with caption containers to html5 figure tags
-add_shortcode( 'wp_caption', 'sp_organico_img_caption_shortcode' );
-add_shortcode( 'caption', 'sp_organico_img_caption_shortcode' );
+add_shortcode( 'wp_caption', 'sp_img_caption_shortcode' );
+add_shortcode( 'caption', 'sp_img_caption_shortcode' );
 
-function sp_organico_img_caption_shortcode( $attr, $content = null ) 
+function sp_img_caption_shortcode( $attr, $content = null ) 
 {
 
 extract( shortcode_atts( array(
@@ -179,7 +179,7 @@ if ( $id ) $idtag = 'id="' . esc_attr( $id ) . '" ';
 }
 
 // shortcode to display a contact email link
-function sp_organico_contact_email_shortcode( $atts, $content = null ) 
+function sp_contact_email_shortcode( $atts, $content = null ) 
 {
 	extract( shortcode_atts( array( 'email' => get_option( 'admin_email' ) ), $atts ) );
 	$output = '<a href="mailto:' . $email . '" title="' . $email . '">' . $email . '</a>';
@@ -187,10 +187,10 @@ function sp_organico_contact_email_shortcode( $atts, $content = null )
 	return $output;
 	
 }
-add_shortcode( 'sp_email', 'sp_organico_contact_email_shortcode' );
+add_shortcode( 'sp_email', 'sp_contact_email_shortcode' );
 
 //shortcode to display horizontal rule with optional colors
-function sp_organico_hr_shortcode( $atts, $content = null ) 
+function sp_hr_shortcode( $atts, $content = null ) 
 {
 	extract( shortcode_atts( array( 'color' => '#ADA394' ), $atts ) );
 	$color = str_replace( "#", "", $color );
@@ -198,12 +198,12 @@ function sp_organico_hr_shortcode( $atts, $content = null )
 	
 	return $output;
 }
-add_shortcode( 'sp_hr', 'sp_organico_hr_shortcode' );
+add_shortcode( 'sp_hr', 'sp_hr_shortcode' );
 
 // back to top shortcode
-add_shortcode( 'sp_btt', 'sp_organico_back_to_top' );
+add_shortcode( 'sp_btt', 'sp_back_to_top' );
 
-function sp_organico_back_to_top( $atts, $content = null ) 
+function sp_back_to_top( $atts, $content = null ) 
 {
 	$output = '<div class="btt group"><a href="#top" title="' . __( 'Back to Top', 'sp' ) . '">' . __( 'Back to Top', 'sp' ) . ' <span class="icon">&uarr;</span></a></div>';
 	
@@ -212,7 +212,7 @@ function sp_organico_back_to_top( $atts, $content = null )
 
 // custom gallery shortcode
 //add_shortcode( 'gallery', 'sp_shortcode_gallery' );
-function sp_organico_shortcode_gallery( $atts, $content = null ) 
+function sp_shortcode_gallery( $atts, $content = null ) 
 {
 
 	global $post, $wp_locale;
@@ -263,8 +263,8 @@ function sp_organico_shortcode_gallery( $atts, $content = null )
 }
 
 // color button shortcodes
-add_shortcode( 'sp_button', 'sp_organico_button_shortcode' );
-function sp_organico_button_shortcode( $atts, $content = null ) 
+add_shortcode( 'sp_button', 'sp_button_shortcode' );
+function sp_button_shortcode( $atts, $content = null ) 
 {
 	extract( shortcode_atts( array(
 		'color' => 'default', 
@@ -305,8 +305,8 @@ function sp_organico_button_shortcode( $atts, $content = null )
 }
 
 // pretty photo lightbox wrap shortcode
-add_shortcode( 'sp_lightbox', 'sp_organico_lightbox_shortcode' );
-function sp_organico_lightbox_shortcode( $atts, $content = null ) 
+add_shortcode( 'sp_lightbox', 'sp_lightbox_shortcode' );
+function sp_lightbox_shortcode( $atts, $content = null ) 
 {
 	extract( shortcode_atts( array( 'title' => '', 'group' => '', 'url' => '', 'thumbnail' => '', 'theme' => '', 'slideshow' => '', 'show_social' => '' ), $atts ) );
 	$content = strip_tags( $content, '<img>' );
@@ -421,8 +421,8 @@ function sp_organico_lightbox_shortcode( $atts, $content = null )
 }
 
 // display raw code shortcode
-add_shortcode( 'sp_code', 'sp_organico_shortcode_code' );
-function sp_organico_shortcode_code( $atts, $content = null ) 
+add_shortcode( 'sp_code', 'sp_shortcode_code' );
+function sp_shortcode_code( $atts, $content = null ) 
 {
 	$content = str_replace( "</p>", "\n", $content );
 	$content = str_replace( "<p>", '', $content );
@@ -434,8 +434,8 @@ function sp_organico_shortcode_code( $atts, $content = null )
 }
 
 // list shortcode
-add_shortcode( 'sp_list','sp_organico_list_shortcode' );
-function sp_organico_list_shortcode( $atts, $content = null ) 
+add_shortcode( 'sp_list','sp_list_shortcode' );
+function sp_list_shortcode( $atts, $content = null ) 
 {
 	extract( shortcode_atts( array(
 		'type' => 'disc'
@@ -499,8 +499,8 @@ function sp_organico_list_shortcode( $atts, $content = null )
 }
 
 // check user loggedin shortcode (if logged in, return content)
-add_shortcode( 'sp_check_login', 'sp_organico_check_login_shortcode' );
-function sp_organico_check_login_shortcode( $atts, $content = null ) 
+add_shortcode( 'sp_check_login', 'sp_check_login_shortcode' );
+function sp_check_login_shortcode( $atts, $content = null ) 
 {
 	if( is_user_logged_in() ) 
 	{
@@ -509,8 +509,8 @@ function sp_organico_check_login_shortcode( $atts, $content = null )
 }
 
 // blockquote shortcode
-add_shortcode( 'sp_quotes', 'sp_organico_blockquote_shortcode' );
-function sp_organico_blockquote_shortcode( $atts, $content = null ) 
+add_shortcode( 'sp_quotes', 'sp_blockquote_shortcode' );
+function sp_blockquote_shortcode( $atts, $content = null ) 
 {
 	extract( shortcode_atts( array(
 		'style' => 'large',
@@ -521,8 +521,8 @@ function sp_organico_blockquote_shortcode( $atts, $content = null )
 }
 
 // display Google map shortcode
-add_shortcode( 'sp_map', 'sp_organico_google_map_shortcode' );
-function sp_organico_google_map_shortcode( $atts, $content = null ) 
+add_shortcode( 'sp_map', 'sp_google_map_shortcode' );
+function sp_google_map_shortcode( $atts, $content = null ) 
 {
 	extract( shortcode_atts( array( 'width' => '500px', 'height' => '300px', 'zoom' => 15, 'address' => '1600 Amphitheatre Parkway Mountain View, CA 94043'), $atts ) );
 	$num = rand( 0, 10000 );
@@ -536,7 +536,7 @@ function sp_organico_google_map_shortcode( $atts, $content = null )
 }
 
 // function to add google map js script
-function sp_organico_google_map(){
+function sp_google_map(){
 	echo '<script type="text/javascript"
 				src="http://maps.googleapis.com/maps/api/js?sensor=false">
 			</script>
@@ -567,8 +567,8 @@ function sp_organico_google_map(){
 }
 
 // tabs
-add_shortcode( 'sp_tabs', 'sp_organico_tabs_shortcode' );
-function sp_organico_tabs_shortcode( $atts, $content = null ) 
+add_shortcode( 'sp_tabs', 'sp_tabs_shortcode' );
+function sp_tabs_shortcode( $atts, $content = null ) 
 {
 	extract( shortcode_atts( array(
 		'tab_titles' => 'Tab1',
@@ -618,8 +618,8 @@ function sp_organico_tabs_shortcode( $atts, $content = null )
 }
 
 // slider
-add_shortcode( 'sp_slider', 'sp_organico_slider_shortcode' );
-function sp_organico_slider_shortcode( $atts, $contents = null ) 
+add_shortcode( 'sp_slider', 'sp_slider_shortcode' );
+function sp_slider_shortcode( $atts, $contents = null ) 
 {
 	extract( shortcode_atts( array(
 		'width' => 650,
@@ -720,8 +720,8 @@ function sp_organico_slider_shortcode( $atts, $contents = null )
 }
 
 // toggle content
-add_shortcode( 'sp_toggle', 'sp_organico_toggle_shortcode' );
-function sp_organico_toggle_shortcode( $atts, $contents = null ) 
+add_shortcode( 'sp_toggle', 'sp_toggle_shortcode' );
+function sp_toggle_shortcode( $atts, $contents = null ) 
 {
 	extract( shortcode_atts( array(
 		'start_state' => 'closed',
@@ -754,8 +754,8 @@ function sp_organico_toggle_shortcode( $atts, $contents = null )
 }
 
 // video player
-add_shortcode( 'sp_video', 'sp_organico_video_shortcode' );
-function sp_organico_video_shortcode( $atts, $contents = null ) 
+add_shortcode( 'sp_video', 'sp_video_shortcode' );
+function sp_video_shortcode( $atts, $contents = null ) 
 {
 	extract( shortcode_atts( array(
 		'id' => 'sp-video-player',
@@ -787,8 +787,8 @@ function sp_organico_video_shortcode( $atts, $contents = null )
 }
 
 // audio player
-add_shortcode( 'sp_audio', 'sp_organico_audio_shortcode' );
-function sp_organico_audio_shortcode( $atts, $contents = null ) 
+add_shortcode( 'sp_audio', 'sp_audio_shortcode' );
+function sp_audio_shortcode( $atts, $contents = null ) 
 {
 	extract( shortcode_atts( array(
 		'id' => 'sp-audio-player',
@@ -808,8 +808,8 @@ function sp_organico_audio_shortcode( $atts, $contents = null )
 }
 
 // informational boxes
-add_shortcode( 'sp_box', 'sp_organico_box_shortcode' );
-function sp_organico_box_shortcode( $atts, $contents = null )
+add_shortcode( 'sp_box', 'sp_box_shortcode' );
+function sp_box_shortcode( $atts, $contents = null )
 {
 	extract( shortcode_atts( array(
 		'type' => 'info'
@@ -827,8 +827,8 @@ function sp_organico_box_shortcode( $atts, $contents = null )
 }
 
 // dropcaps
-add_shortcode( 'sp_dropcap', 'sp_organico_dropcap_shortcode' );
-function sp_organico_dropcap_shortcode( $atts, $contents = null )
+add_shortcode( 'sp_dropcap', 'sp_dropcap_shortcode' );
+function sp_dropcap_shortcode( $atts, $contents = null )
 {
 	extract( shortcode_atts( array(
 		'size' => '60px',
@@ -847,7 +847,7 @@ function sp_organico_dropcap_shortcode( $atts, $contents = null )
 	return $output;	
 }
 
-function sp_organico_do_shortcode_fix( $content ) 
+function sp_do_shortcode_fix( $content ) 
 {
     global $shortcode_tags;
     // save current shortcodes
@@ -879,5 +879,5 @@ function sp_organico_do_shortcode_fix( $content )
     $shortcode_tags = $old_shortcode_tags;
     return $content;
 }
-add_filter( 'the_content', 'sp_organico_do_shortcode_fix', 9 );
+add_filter( 'the_content', 'sp_do_shortcode_fix', 9 );
 ?>

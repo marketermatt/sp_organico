@@ -1,16 +1,3 @@
-
-
-
-
-
-/*
-     FILE ARCHIVED ON 0:46:31 Sep 2, 2013 AND RETRIEVED FROM THE
-     INTERNET ARCHIVE ON 16:56:19 Jun 25, 2015.
-     JAVASCRIPT APPENDED BY WAYBACK MACHINE, COPYRIGHT INTERNET ARCHIVE.
-
-     ALL OTHER CONTENT MAY ALSO BE PROTECTED BY COPYRIGHT (17 U.S.C.
-     SECTION 108(a)(3)).
-*/
 /*
  *	jQuery carouFredSel 6.1.0
  *	Demo's and documentation:
@@ -20,8 +7,8 @@
  *	www.frebsite.nl
  *
  *	Dual licensed under the MIT and GPL licenses.
- *	/web/20130902004631/http://en.wikipedia.org/wiki/MIT_License
- *	/web/20130902004631/http://en.wikipedia.org/wiki/GNU_General_Public_License
+ *	http://en.wikipedia.org/wiki/MIT_License
+ *	http://en.wikipedia.org/wiki/GNU_General_Public_License
  */
 
 

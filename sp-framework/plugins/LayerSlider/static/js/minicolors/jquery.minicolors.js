@@ -275,6 +275,7 @@ if(jQuery) (function($) {
 				// Add new if it changed 
 				if(items.length < 1 || items[0] !== currInput.val()) {
 					items.unshift(currInput.val());
+					console.log('save');
 				}
 
 				// Manage the maximum number of recent colors

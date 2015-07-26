@@ -1,188 +1,115 @@
 <?php
 /**
- * SP FRAMEWORK FILE - DO NOT EDIT!
- * 
- * @package SP FRAMEWORK
- *
- * includes functions
- */
+* SP FRAMEWORK FILE - DO NOT EDIT!
+* 
+* framework class
+******************************************************************/
 
-if ( ! defined( 'ABSPATH' ) ) exit; // no direct access
+// load cofiguration items
+require_once( get_template_directory() . '/sp-framework/functions/config.php' );
+	
+// load xml2array function
+require_once( get_template_directory() . '/sp-framework/functions/xml2array.php' );
 
-/////////////////////////////////////////////////////
-// include helpers/utilities
-/////////////////////////////////////////////////////
-require_once( 'inc/utils/helpers.php' );
+// load database functions
+require_once( get_template_directory() . '/sp-framework/functions/database.php' );
 
-/////////////////////////////////////////////////////
-// include XML2Array Class
-/////////////////////////////////////////////////////
-require_once( 'inc/utils/xml2array.php' );
+// load utility functions
+require_once( get_template_directory() . '/sp-framework/functions/utils.php' );	
 
-/////////////////////////////////////////////////////
-// include config
-/////////////////////////////////////////////////////
-require_once( 'inc/core/config.php' );
+// load maintenance functions
+require_once( get_template_directory() . '/sp-framework/functions/maintenance.php' );
 
-/////////////////////////////////////////////////////
-// include database
-/////////////////////////////////////////////////////
-require_once( 'inc/core/database.php' );
+// load custom post types
+require_once( get_template_directory() . '/sp-framework/functions/custom-post-types.php' );
 
-/////////////////////////////////////////////////////
-// include layerslider version 5.3.1
-// changes made to the plugin
-// changed plugin path - layerslider.php line 32 to define('LS_ROOT_URL', FRAMEWORK_URL . 'plugins/LayerSlider');
-// changed plugin layerslider.php line 67 comment out notice include LS_ROOT_PATH.'/wp/notices.php';
-// changed the menu position to be 57.777 - menus.php line 29 after icon
-// shortcodes.php add if ( sp_hide_on_mobile() ) {return;}
+// load custom widgets
+require_once( get_template_directory() . '/sp-framework/functions/class-widgets.php' );
 
-/////////////////////////////////////////////////////
-require_once( 'plugins/LayerSlider/layerslider.php' );
+// load custom login
+require_once( get_template_directory() . '/sp-framework/functions/custom-login.php' );
 
+// load pagination
+require_once( get_template_directory() . '/sp-framework/functions/pagination.php' );
 
-/////////////////////////////////////////////////////
-// include activation
-/////////////////////////////////////////////////////
-require_once( 'inc/core/activation.php' );
+// load shortcode and tags
+require_once( get_template_directory() . '/sp-framework/functions/shortcodes-tags.php' );
 
-/////////////////////////////////////////////////////
-// include setup
-/////////////////////////////////////////////////////
-require_once( 'inc/core/setup.php' );
+// load custom styles
+require_once( get_template_directory() . '/sp-framework/functions/custom-styles.php' );
 
-/////////////////////////////////////////////////////
-// include google fonts
-/////////////////////////////////////////////////////
-require_once( 'inc/frontend/google-fonts.php' );
+// load header-footer scripts
+require_once( get_template_directory() . '/sp-framework/functions/header-footer-scripts.php' );
 
-/////////////////////////////////////////////////////
-// include maintenance
-/////////////////////////////////////////////////////
-require_once( 'inc/frontend/maintenance.php' );
+// load facebook like scripts
+require_once( get_template_directory() . '/sp-framework/functions/facebook-like-script.php' );
 
-/////////////////////////////////////////////////////
-// include custom post types
-/////////////////////////////////////////////////////
-require_once( 'inc/frontend/custom-post-types.php' );
+// load social media icons
+require_once( get_template_directory() . '/sp-framework/functions/social-media-icons.php' );
 
-/////////////////////////////////////////////////////
-// include custom meta boxes
-/////////////////////////////////////////////////////
-require_once( 'inc/admin/custom-meta-boxes.php' );
+// include theme post enhancements
+if ( file_exists( get_template_directory() . '/sp-posts-comments.php' ) )
+	require_once( get_template_directory() . '/sp-posts-comments.php' );
 
-/////////////////////////////////////////////////////
-// include custom columns
-/////////////////////////////////////////////////////
-require_once( 'inc/admin/custom-columns.php' );
-
-/////////////////////////////////////////////////////
-// include register widget areas
-/////////////////////////////////////////////////////
-require_once( 'inc/widgets/widget-areas.php' );
-
-/////////////////////////////////////////////////////
-// include filters
-/////////////////////////////////////////////////////
-require_once( 'inc/frontend/filters.php' );
-
-/////////////////////////////////////////////////////
-// include actions
-/////////////////////////////////////////////////////
-require_once( 'inc/frontend/actions.php' );
-
-/////////////////////////////////////////////////////
-// include frontend ajax
-/////////////////////////////////////////////////////
-require_once( 'inc/frontend/frontend-ajax.php' );
-
-/////////////////////////////////////////////////////
-// include menus
-/////////////////////////////////////////////////////
-require_once( 'inc/frontend/menus.php' );
-
-/////////////////////////////////////////////////////
-// include frontend display functions
-/////////////////////////////////////////////////////
-require_once( 'inc/frontend/frontend-display-functions.php' );
-
-/////////////////////////////////////////////////////
 // include widgets
-/////////////////////////////////////////////////////
-require_once( 'inc/widgets/widgets.php' );
+if ( file_exists( get_template_directory() . '/sp-widgets.php' ) )
+	require_once( get_template_directory() . '/sp-widgets.php' );
 
-/////////////////////////////////////////////////////
-// include woocommerce functions
-/////////////////////////////////////////////////////
-require_once( 'inc/ecommerce/woocommerce-functions.php' );
+// include theme menus
+if ( file_exists( get_template_directory() . '/sp-menu.php' ) )
+	require_once( get_template_directory() . '/sp-menu.php' );
 
-/////////////////////////////////////////////////////
-// include carousel slider functions
-/////////////////////////////////////////////////////
-require_once( 'inc/frontend/carousel-slider.php' );
-
-/////////////////////////////////////////////////////
-// misc functions
-/////////////////////////////////////////////////////
-require_once( 'inc/utils/misc-functions.php' );
-
-/////////////////////////////////////////////////////
-// pagination functions
-/////////////////////////////////////////////////////
-require_once( 'inc/frontend/pagination.php' );
-
-/////////////////////////////////////////////////////
-// include scripts and styles
-/////////////////////////////////////////////////////
-require_once( 'inc/core/scripts-styles.php' );
-
-/////////////////////////////////////////////////////
-// include timezones
-/////////////////////////////////////////////////////
-require_once( 'inc/admin/timezones.php' );
-
-/////////////////////////////////////////////////////
-// include shortcodes
-/////////////////////////////////////////////////////
-require_once( 'inc/shortcodes/shortcodes.php' );
-
-/////////////////////////////////////////////////////
-// include deprecated functions
-/////////////////////////////////////////////////////
-require_once( 'inc/deprecated-functions.php' );
-
-/////////////////////////////////////////////////////
-// include admin login functions
-/////////////////////////////////////////////////////
-require_once( 'inc/admin/admin-login-functions.php' );
-
-/////////////////////////////////////////////////////
-// include admin function files - only load in backend
-/////////////////////////////////////////////////////
-if ( is_admin() ) {
-	require_once( 'inc/admin/clear-caches.php' );
-	require_once( 'inc/admin/admin-functions.php' );
-	require_once( 'inc/admin/admin-ajax.php' );
-	require_once( 'inc/admin/admin-mega-menu.php' );
-	require_once( 'inc/admin/control-panel-modules.php' );
-	require_once( 'inc/admin/control-panel.php' );
-	require_once( 'inc/shortcodes/shortcodes-module.php' );
-	require_once( 'inc/admin/contextual-help.php' );
-	require_once( THEME_PATH . 'theme-functions/theme-hot-patch.php' );
+// include WPEC also bought function
+if ( class_exists( 'WP_eCommerce' ) )
+{
+	if ( file_exists( get_template_directory() . '/sp-also-bought.php' ) )
+		require_once( get_template_directory() . '/sp-also-bought.php' );
 }
 
-/////////////////////////////////////////////////////
-// include customizer functions
-/////////////////////////////////////////////////////
-require_once( 'inc/admin/customizer.php' );
+// include WPEC functions
+if ( class_exists( 'WP_eCommerce' ) )
+{
+	if ( file_exists( get_template_directory() . '/sp-framework/functions/wpec-functions.php' ) )
+		require_once( get_template_directory() . '/sp-framework/functions/wpec-functions.php' );
+}
 
+// include WOO Commerce functions
+if ( class_exists( 'woocommerce' ) )
+{
+	if ( file_exists( get_template_directory() . '/sp-framework/functions/woo-functions.php' ) )
+		require_once( get_template_directory() . '/sp-framework/functions/woo-functions.php' );
+}
+
+// load theme setup
+require_once( get_template_directory() . '/sp-framework/functions/theme-setup.php' );
+
+// load theme filters
+require_once( get_template_directory() . '/sp-framework/functions/theme-filters.php' );
+
+// load theme scripts
+require_once( get_template_directory() . '/sp-framework/functions/theme-scripts.php' );
+
+// load deprecated functions
+require_once( get_template_directory() . '/sp-framework/functions/deprecated-functions.php' );
+
+// load custom meta boxes
+require_once( get_template_directory() . '/sp-framework/functions/custom-meta-boxes.php' );
+		
+// load backend ajax functions
+require_once( get_template_directory() . '/sp-framework/functions/backend-ajax.php' );
+
+// load google fonts
+require_once( get_template_directory() . '/sp-framework/functions/google-fonts.php' );
+
+// load backend control panel modules
+require_once( get_template_directory() . '/sp-framework/functions/control-panel-modules.php' );
+
+// load backend control panel
+require_once( get_template_directory() . '/sp-framework/functions/control-panel.php' );
+	
 /////////////////////////////////////////////////////
 // include API manager code
 /////////////////////////////////////////////////////
 require_once( 'am/function.php' );
-
-
-/////////////////////////////////////////////////////
-// include Shortcode tags
-/////////////////////////////////////////////////////
-require_once( 'functions/shortcodes-tags.php' ); 
+	
+?>

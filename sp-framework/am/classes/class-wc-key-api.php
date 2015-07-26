@@ -16,11 +16,13 @@ class Api_Manager_theme_Organico_Key {
 
 	// API Key URL
 	public function create_software_api_url( $args ) {
+	
+		//$api_url = add_query_arg( 'wc-api', 'am-software-api', 'http://splashingpixels.com' );
 		
-		//$api_url = add_query_arg( 'wc-api', 'am-software-api', AMET()->upgrade_url );
-		
+								
 		$api_url = add_query_arg( 'wc-api', 'am-software-api', "http://splashingpixels.com");
 		
+			
 		return $api_url . '&' . http_build_query( $args );
 	}
 
@@ -38,23 +40,21 @@ class Api_Manager_theme_Organico_Key {
 				
 		$target_url = esc_url_raw( $this->create_software_api_url( $args ) ); 
 		
-		/* print_r($target_url);
-		die("okoko");  */
-
 		$request = wp_remote_get( $target_url );
 		
+		 /* print_r($target_url);
+		die("okok"); */    
 		
-
-		//$request = wp_remote_post( AMET()->upgrade_url . 'wc-api/am-software-api/', array( 'body' => $args ) );
-
 		if( is_wp_error( $request ) || wp_remote_retrieve_response_code( $request ) != 200 ) {
 		// Request failed
 			return false;
 		}
 
 		$response = wp_remote_retrieve_body( $request );
-
-		return $response;
+		
+		$response_filtered = ltrim($response, '0');
+				
+		return $response_filtered;
 	}
 
 	public function deactivate( $args ) {

@@ -1,63 +1,43 @@
 <?php
 /**
- * Edit address form
- *
- * actual version 2.1.0
- *
- * @author 		WooThemes
- * @package 	WooCommerce/Templates
- * @version     5.0.0
+ * Edit Address Form
  */
-
-if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
-
+ 
 global $woocommerce, $current_user;
-
-$page_title = ( $load_address == 'billing' ) ? __( 'Billing Address', 'sp-theme' ) : __( 'Shipping Address', 'sp-theme' );
 
 get_currentuserinfo();
 ?>
 
-<?php wc_print_notices(); ?>
+<?php $woocommerce->show_messages(); ?>
 
-<?php sp_woo_checkout_additional_info(); ?>
-<div class="row edit-address">
+<?php if (!$load_address) : ?>
+
+	<?php woocommerce_get_template('myaccount/my-address.php'); ?>
+
+<?php else : ?>
+
+	<form action="<?php echo esc_url( add_query_arg( 'address', $load_address, get_permalink( woocommerce_get_page_id('edit_address') ) ) ); ?>" method="post" class="change-address">
+		
+		<h3><?php if ($load_address=='billing') _e('Billing Address', 'sp'); else _e('Shipping Address', 'sp'); ?></h3>
+		
+		<?php 
+		foreach ($address as $key => $field) :
+			$value = (isset($_POST[$key])) ? $_POST[$key] : get_user_meta( get_current_user_id(), $key, true );
+			
+			// Default values
+			if (!$value && ($key=='billing_email' || $key=='shipping_email')) $value = $current_user->user_email;
+			if (!$value && ($key=='billing_country' || $key=='shipping_country')) $value = $woocommerce->countries->get_base_country();
+			if (!$value && ($key=='billing_state' || $key=='shipping_state')) $value = $woocommerce->countries->get_base_state();
+			
+			woocommerce_form_field( $key, $field, $value );
+		endforeach;
+		?>
+		
+		<input type="submit" class="button" name="save_address" value="<?php _e('Save Address', 'sp'); ?>" />
+		
+		<?php $woocommerce->nonce_field('edit_address') ?>
+		<input type="hidden" name="action" value="edit_address" />
 	
-	<div class="<?php echo sp_column_css( '', '', '', '3' ); ?>">
-		<nav class="account-nav">
-			<h3 class="title-with-line"><span><?php _e( 'My Account', 'sp-theme' ); ?></span></h3>
-			<ul>
-				<li><a href="<?php echo get_permalink( woocommerce_get_page_id( 'myaccount' ) ); ?>" title="<?php esc_attr_e( 'Back to My Account', 'sp-theme' ); ?>" class="edit-address-link"><i class="icon-angle-left" aria-hidden="true"></i><?php _e( 'Back to My Account', 'sp-theme' ); ?></a></li>
-			</ul>
-		</nav>
-	</div><!--close .column-->
+	</form>
 
-	<div class="<?php echo sp_column_css( '', '', '', '9' ); ?>">
-
-		<?php if ( ! $load_address) : ?>
-
-			<?php wc_get_template('myaccount/my-address.php'); ?>
-
-		<?php else : ?>
-
-			<form method="post">
-
-				<h3><?php echo apply_filters( 'woocommerce_my_account_edit_address_title', $page_title ); ?></h3>
-
-				<?php foreach ( $address as $key => $field ) : ?>
-
-					<?php woocommerce_form_field( $key, $field, ! empty( $_POST[ $key ] ) ? wc_clean( $_POST[ $key ] ) : $field['value'] ); ?>
-
-				<?php endforeach; ?>
-
-				<p>
-					<input type="submit" class="button" name="save_address" value="<?php _e( 'Save Address', 'sp-theme' ); ?>" />
-					<?php wp_nonce_field('edit_address'); ?>
-					<input type="hidden" name="action" value="edit_address" />
-				</p>
-
-			</form>
-
-		<?php endif; ?>
-	</div><!--close .column-->
-</div><!--close .row-->		
+<?php endif; ?>

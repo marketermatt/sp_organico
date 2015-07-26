@@ -1,66 +1,54 @@
 <?php
 /**
- * Checkout billing information form
- *
- * actual version 2.1.2
- *
- * @author 		WooThemes
- * @package 	WooCommerce/Templates
- * @version     5.0.0
+ * Checkout Billing Information Form
  */
-
-if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+global $woocommerce;
 ?>
-<div class="woocommerce-billing-fields">
-	<?php if ( WC()->cart->ship_to_billing_address_only() && WC()->cart->needs_shipping() ) : ?>
 
-		<h3 class="title-with-line"><span><?php _e( 'Billing &amp; Shipping', 'sp-theme' ); ?></span></h3>
+<?php if ( $woocommerce->cart->ship_to_billing_address_only() && $woocommerce->cart->needs_shipping() ) : ?>
+	
+	<h3><?php _e('Billing &amp; Shipping', 'sp'); ?></h3>
+	
+<?php else : ?>
 
-	<?php else : ?>
+	<h3><?php _e('Billing Address', 'sp'); ?></h3>
 
-		<h3 class="title-with-line"><span><?php _e( 'Billing Address', 'sp-theme' ); ?></span></h3>
+<?php endif; ?>
 
-	<?php endif; ?>
+<?php do_action('woocommerce_before_checkout_billing_form', $checkout); ?>
 
-	<?php do_action('woocommerce_before_checkout_billing_form', $checkout ); ?>
+<?php foreach ($checkout->checkout_fields['billing'] as $key => $field) : ?>
+	
+	<?php woocommerce_form_field( $key, $field, $checkout->get_value( $key ) ); ?>	
+	
+<?php endforeach; ?>
 
-	<?php foreach ($checkout->checkout_fields['billing'] as $key => $field) : ?>
+<?php do_action('woocommerce_after_checkout_billing_form', $checkout); ?>
 
-		<?php woocommerce_form_field( $key, $field, $checkout->get_value( $key ) ); ?>
+<?php if (!is_user_logged_in() && get_option('woocommerce_enable_signup_and_login_from_checkout')=="yes") : ?>
 
-	<?php endforeach; ?>
-
-	<?php do_action('woocommerce_after_checkout_billing_form', $checkout ); ?>
-
-	<?php if ( ! is_user_logged_in() && $checkout->enable_signup ) : ?>
-
-		<?php if ( $checkout->enable_guest_checkout ) : ?>
-
-			<p class="form-row form-row-wide create-account">
-				<input class="input-checkbox" id="createaccount" <?php checked( ( true === $checkout->get_value( 'createaccount' ) || ( true === apply_filters( 'woocommerce_create_account_default_checked', false ) ) ), true) ?> type="checkbox" name="createaccount" value="1" /> <label for="createaccount" class="checkbox"><?php _e( 'Create an account?', 'woocommerce' ); ?></label>
-			</p>
-
-		<?php endif; ?>
-
-		<?php do_action( 'woocommerce_before_checkout_registration_form', $checkout ); ?>
+	<?php if (get_option('woocommerce_enable_guest_checkout')=='yes') : ?>
 		
-		<?php if ( ! empty( $checkout->checkout_fields['account'] ) ) : ?>
-
-			<div class="create-account clearfix">
-
-				<p><?php _e( 'Create an account by entering the information below. If you are a returning customer please login at the top of the page.', 'woocommerce' ); ?></p>
-
-				<?php foreach ( $checkout->checkout_fields['account'] as $key => $field ) : ?>
-
-					<?php woocommerce_form_field( $key, $field, $checkout->get_value( $key ) ); ?>
-
-				<?php endforeach; ?>
-
-			</div>
-
-		<?php endif; ?>
-
-		<?php do_action( 'woocommerce_after_checkout_registration_form', $checkout ); ?>
-
+		<p class="form-row">
+			<input class="input-checkbox" id="createaccount" <?php checked($checkout->get_value('createaccount'), true) ?> type="checkbox" name="createaccount" value="1" /> <label for="createaccount" class="checkbox"><?php _e('Create an account?', 'sp'); ?></label>
+		</p>
+		
 	<?php endif; ?>
-</div>
+	
+	<?php do_action( 'woocommerce_before_checkout_registration_form', $checkout ); ?>
+	
+	<div class="create-account">
+	
+		<p class="message"><?php _e('Create an account by entering the information below. If you are a returning customer please login with your username at the top of the page.', 'sp'); ?></p>
+	
+		<?php foreach ($checkout->checkout_fields['account'] as $key => $field) : ?>
+		
+			<?php woocommerce_form_field( $key, $field, $checkout->get_value( $key ) ); ?>
+		
+		<?php endforeach; ?>
+	
+	</div>
+	
+	<?php do_action( 'woocommerce_after_checkout_registration_form', $checkout ); ?>
+					
+<?php endif; ?>

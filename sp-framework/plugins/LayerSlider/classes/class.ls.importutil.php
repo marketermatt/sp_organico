@@ -56,10 +56,7 @@ class LS_ImportUtil {
 						foreach(glob($this->tmpDir.'/*', GLOB_ONLYDIR) as $key => $dir) {
 
 							$this->imported = array();
-
-							if(isset($_POST['import_images'])) {
-								$this->uploadMedia($dir);
-							}
+							$this->uploadMedia($dir);
 
 							if(file_exists($dir.'/settings.json')) {
 								$this->addSlider($dir.'/settings.json');
@@ -215,7 +212,6 @@ class LS_ImportUtil {
 		// Get slider data and title
 		$data = json_decode(file_get_contents($file), true);
 		$title = $data['properties']['title'];
-		$slug = !empty($data['properties']['slug']) ? $data['properties']['slug'] : '';
 		
 		// Slider settings
 		if(!empty($data['properties']['backgroundimage'])) {
@@ -256,7 +252,7 @@ class LS_ImportUtil {
 		}}
 
 		// Add slider
-		LS_Sliders::add($title, $data, $slug);
+		LS_Sliders::add($title, $data);
 	}
 
 

@@ -1,78 +1,82 @@
 <?php 
-get_header();
+get_header(); 
 
-global $post;
-
-$classes = array();
-
-if ( get_post_type() === 'post' )
-	$classes[] = 'blog';
-
-$layout = sp_get_page_layout(); 
-$orientation = $layout['orientation'];
-$span_columns = $layout['span_columns'];
-
-$classes[] = $span_columns;
-$classes[] = 'site-content';
+// get the current page layout settings (array)
+$layout = sp_page_layout();
 ?>
+		<?php dynamic_sidebar( 'page-top-widget' ); ?>
+		<div id="container" class="group <?php echo $layout['orientation']; ?>">
+			<?php
+			if ($layout['sidebar_left']) {
+				get_sidebar('left');	
+			} ?>
+			<?php
+			if ($sidebar_left) {
+				get_sidebar('left');	
+			} ?>
+        
+			<div id="content" role="main">
 
-	<header class="archive-header">
-		<div class="container">
-			<h1 class="archive-title"><?php
-				if ( is_day() ) :
-					printf( __( 'Daily Archives: %s', 'sp-theme' ), '<span>' . get_the_date() . '</span>' );
-				elseif ( is_month() ) :
-					printf( __( 'Monthly Archives: %s', 'sp-theme' ), '<span>' . get_the_date( _x( 'F Y', 'monthly archives date format', 'sp-theme' ) ) . '</span>' );
-				elseif ( is_year() ) :
-					printf( __( 'Yearly Archives: %s', 'sp-theme' ), '<span>' . get_the_date( _x( 'Y', 'yearly archives date format', 'sp-theme' ) ) . '</span>' );
-				else :
-					_e( 'Archives', 'sp-theme' );
-				endif;
-			?></h1>
-			<?php sp_display_breadcrumbs(); ?>
-		</div><!--close .container-->
-	</header><!-- .archive-header -->
+<?php
+	if ( have_posts() ) : ?>
 
-	<div class="container main-container <?php echo esc_attr( $orientation ); ?>">
-		
-		<?php do_action( 'sp_archive_layout_before_content_row' ); ?>
-
-		<div class="row">
+		<header class="page-header">
+			<h1 class="page-title">
+<?php if ( is_day() ) : ?>
+				<?php printf( __( 'Daily Archives: <span>%s</span>', 'sp' ), get_the_date() ); ?>
+<?php elseif ( is_month() ) : ?>
+				<?php printf( __( 'Monthly Archives: <span>%s</span>', 'sp' ), get_the_date( 'F Y' ) ); ?>
+<?php elseif ( is_year() ) : ?>
+				<?php printf( __( 'Yearly Archives: <span>%s</span>', 'sp' ), get_the_date( 'Y' ) ); ?>
+<?php else : ?>
+				<?php _e( 'Blog Archives', 'sp' ); ?>
+<?php endif; ?>
+			</h1>
+		</header>
+		<?php
+		$pagination = sp_isset_option( 'blog_pagination', 'value' );
+		if (isset($pagination) && $pagination == 'next-previous') {
+			sp_content_nav('nav-above');
+		} elseif (isset($pagination) && $pagination == 'numeration') {
+			sp_pagination();
+		} elseif (isset($pagination) && $pagination == 'no-pagination') {
 			
-			<?php if ( $layout['sidebar_left'] ) get_sidebar( 'left' ); ?>
+		} else {
+			sp_content_nav('nav-above');
+		}
+        while ( have_posts() ) : the_post();
+            get_template_part( 'content', get_post_format() );
+        endwhile;
+		if (isset($pagination) && $pagination == 'next-previous') {
+			sp_content_nav('nav-below');
+		} elseif (isset($pagination) && $pagination == 'numeration') {
+			sp_pagination();
+		} elseif (isset($pagination) && $pagination == 'no-pagination') {
+									
+		} else {
+			sp_content_nav('nav-below');
+		}
+        ?>
+	<?php else : ?>
 
-			<section id="primary" <?php post_class( $classes ); ?>>
-				<div id="content" role="main">
+        <article id="post-0" class="post no-results not-found">
+            <header class="entry-header">
+                <h1 class="entry-title"><?php _e( 'Nothing Found', 'sp' ); ?></h1>
+            </header><!-- .entry-header -->
 
-				<?php if ( have_posts() ) : ?>
+            <div class="entry-content">
+                <p><?php _e( 'Apologies, but no results were found for the requested archive. Perhaps searching will help find a related post.', 'sp' ); ?></p>
+                <?php get_search_form(); ?>
+            </div><!-- .entry-content -->
+        </article><!-- #post-0 -->
 
-					<?php
-					/* Start the Loop */
-					while ( have_posts() ) : the_post();
-
-						/* Include the post format-specific template for the content. If you want to
-						 * this in a child theme then include a file called called content-___.php
-						 * (where ___ is the post format) and that will be used instead.
-						 */
-						get_template_part( 'content', get_post_format() );
-
-					endwhile;
-
-					sp_paging_nav();
-					?>
-
-				<?php else : ?>
-					<?php get_template_part( 'content', 'none' ); ?>
-				<?php endif; ?>
-
-				</div><!-- #content -->
-			</section><!-- #primary -->
-
-			<?php if ( $layout['sidebar_right'] ) get_sidebar( 'right' ); ?>
-		</div><!--close. row-->
-		
-		<?php do_action( 'sp_archive_layout_after_content_row' ); ?>
-
-	</div><!--close . container-->
-
+    <?php endif; ?>
+        
+			</div><!-- #content -->
+            <?php 
+			if ($layout['sidebar_right']) {
+				get_sidebar('right'); 
+			} ?>
+		</div><!-- #container -->
+		<?php dynamic_sidebar( 'page-bottom-widget' ); ?>
 <?php get_footer(); ?>

@@ -1,86 +1,73 @@
 <?php 
-get_header();
+get_header(); 
 
-global $post;
+// get the current page layout settings (array)
+$layout = sp_page_layout();
+?>		
+<?php dynamic_sidebar( 'page-top-widget' ); ?>
+<div id="container" class="group <?php echo $layout['orientation']; ?>">
+			<?php
+			if ($layout['sidebar_left']) {
+				get_sidebar('left');	
+			} ?>
 
-$classes = array();
-
-if ( get_post_type() === 'post' )
-	$classes[] = 'blog';
-
-// get saved setting
-$blog_category_title_show = get_theme_mod( 'blog_category_title_show' );
-
-$layout = sp_get_page_layout(); 
-$orientation = $layout['orientation'];
-$span_columns = $layout['span_columns'];
-
-$classes[] = $span_columns;
-$classes[] = 'site-content';
-?>
-
-	<?php
-	if ( isset( $blog_category_title_show ) && $blog_category_title_show === 'on' ) { 
-	?>
-	<header class="category-header">
-		<div class="container">
-		<h1 class="category-title"><?php printf( __( 'Category: %s', 'sp-theme' ), '<span>' . single_cat_title( '', false ) . '</span>' ); ?>
-
-		<?php if ( category_description() ) : // Show an optional category description ?>
-			<span class="heading-tagline"> - <?php echo strip_tags( category_description() ); ?></span>
-		<?php endif; ?>
-		</h1>
-		<?php sp_display_breadcrumbs(); ?>
-		</div><!--close .container-->
-	</header><!-- .category-header -->
-	<?php
-	}
-	?>
-	
-	<?php do_action( 'sp_category_layout_before_main_container' ); ?>
-
-	<div class="container main-container <?php echo esc_attr( $orientation ); ?>">
-		
-		<?php do_action( 'sp_category_layout_before_content_row' ); ?>
-
-		<div class="row">
-			
-			<?php if ( $layout['sidebar_left'] ) get_sidebar( 'left' ); ?>
-
-			<section id="primary" <?php post_class( $classes ); ?>>
-				<div id="content" role="main">
-
+			<div id="content" role="main">
 				<?php if ( have_posts() ) : ?>
-
+                	<header class="page-header">
+                        <h1 class="page-title"><?php
+                            printf( __( 'Category: %s', 'sp' ), '<span>' . single_cat_title( '', false ) . '</span>' );
+                        ?></h1>
+                        <?php
+                            $category_description = category_description();
+                            if ( ! empty( $category_description ) )
+                                echo apply_filters( 'category_archive_meta', '<div class="category-archive-meta">' . $category_description . '</div>' );
+                        ?>
+                    </header>
+                    <?php
+					$pagination = sp_isset_option( 'blog_pagination', 'value' );
+					if (isset($pagination) && $pagination == 'next-previous') {
+						sp_content_nav('nav-above');
+					} elseif (isset($pagination) && $pagination == 'numeration') {
+						sp_pagination();
+					} elseif (isset($pagination) && $pagination == 'no-pagination') {
+						
+					} else {
+						sp_content_nav('nav-above');
+					} ?>
+                    <div class="blog-article-wrap">
 					<?php
-					/* Start the Loop */
-					while ( have_posts() ) : the_post();
-
-						/* Include the post format-specific template for the content. If you want to
-						 * this in a child theme then include a file called called content-___.php
-						 * (where ___ is the post format) and that will be used instead.
-						 */
-						get_template_part( 'content', get_post_format() );
-
-					endwhile;
-
-					sp_paging_nav();
-					?>
-
+    				while ( have_posts() ) : the_post();
+                    	get_template_part( 'content', get_post_format() );
+					endwhile; ?>
+                    </div><!--close blog-article-wrap-->
+					<?php
+					if (isset($pagination) && $pagination == 'next-previous') {
+						sp_content_nav('nav-below');
+					} elseif (isset($pagination) && $pagination == 'numeration') {
+						sp_pagination();
+					} elseif (isset($pagination) && $pagination == 'no-pagination') {
+												
+					} else {
+						sp_content_nav('nav-below');
+					}
+                    ?>
+                    <div class="btt group"><a href="#top" title="<?php _e( 'Back to Top', 'sp' ); ?>"><?php _e( 'Back to Top', 'sp' ); ?> &uarr;</a></div>
 				<?php else : ?>
-					<?php get_template_part( 'content', 'none' ); ?>
-				<?php endif; ?>
-
-				</div><!-- #content -->
-			</section><!-- #primary -->
-
-			<?php if ( $layout['sidebar_right'] ) get_sidebar( 'right' ); ?>
-		</div><!--close. row-->
-		
-		<?php do_action( 'sp_category_layout_after_content_row' ); ?>
-
-	</div><!--close . container-->
-
-	<?php do_action( 'sp_category_layout_after_main_container' ); ?>
-
+                    <article id="post-0" class="post no-results not-found">
+                        <header class="entry-header">
+                            <h1 class="entry-title"><?php _e( 'Nothing Found', 'sp' ); ?></h1>
+                        </header><!-- .entry-header -->
+    
+                        <div class="entry-content">
+                            <p><?php _e( 'Apologies, but no results were found for the requested archive. Perhaps searching will help find a related post.', 'sp' ); ?></p>
+                        </div><!-- .entry-content -->
+                    </article><!-- #post-0 -->
+                <?php endif; ?>
+            </div><!-- #content -->
+            <?php 
+			if ($layout['sidebar_right']) {
+				get_sidebar('right'); 
+			} ?>
+		</div><!-- #container -->
+		<?php dynamic_sidebar( 'page-bottom-widget' ); ?>
 <?php get_footer(); ?>
