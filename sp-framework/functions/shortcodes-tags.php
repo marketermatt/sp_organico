@@ -880,4 +880,296 @@ function sp_do_shortcode_fix( $content )
     return $content;
 }
 add_filter( 'the_content', 'sp_do_shortcode_fix', 9 );
+
+
+
+// custom portfolio shortcode
+add_shortcode( 'sp-portfolio', 'sp_portfolio_shortcode' );
+
+/**
+ * Portfolio shortcode
+ *
+ * @access public
+ * @since 3.0
+ * @param array $atts | the attributes passed in
+ * @param string $content | the content passed in
+ * @return html $output | the shortcode
+ */
+function sp_portfolio_shortcode( $atts, $content = null ) {
+	global $post, $paged;
+	
+	$paged = ( get_query_var( 'paged' ) ) ? get_query_var( 'paged' ) : 1;
+
+	// extracts the attributes into variables
+	extract( shortcode_atts( array(
+		'category'				=> $category, // category from portfolio
+		'columns'				=> $columns, // 1, 2, 3, 4, 5, 6
+		'show_filters'			=> 'true',
+		'sort_order'			=> 'name', // name, position
+		'sort_by'				=> 'ASC', // ASC, DESC
+		'show_title'			=> 'false',
+		'show_excerpt'			=> 'false',
+		'gallery_only'			=> 'true', // this will invoke lightbox when clicked
+		'image_width'			=> sp_get_theme_init_setting( 'portfolio_list_size', 'width' ),
+		'image_height'			=> sp_get_theme_init_setting( 'portfolio_list_size', 'height' ),
+		'image_crop'			=> 'true',
+		'link_gallery'			=> 'true',
+		'posts_per_page'		=> '-1',
+		'show_cat_description'	=> 'false',
+		'show_animation'		=> 'true', // will turn on isotope
+		'mosaic'				=> 'false',
+		'custom_class'			=> '' // allow users to add their own class
+	), $atts ) );
+
+	$metakey = '';
+	$order_by = '';
+
+	if ( $sort_order !== 'name' ) {
+		$metakey = '_sp_portfolio_sort_position';
+		$order_by = 'meta_value_num';
+	}
+
+	// build the portfolio entry argument
+	$args = array (
+		'post_type'			=> 'portfolio-entries',
+		'post_status'		=> 'publish',
+		'posts_per_page'	=> (int)$posts_per_page,
+		'tax_query'			=> array(
+			array(
+				'taxonomy'	=> 'portfolio_categories',
+				'field'		=> 'id',
+				'terms'		=> $category,
+				'operator'	=> 'IN'
+			)
+		),
+		'order'		=> strtoupper( $sort_by ),
+		'orderby'	=> $order_by,
+		'meta_key'	=> $metakey,
+		'paged'		=> $paged
+	);	
+	
+	//print_r($args); die("okok");
+
+	$entries = new WP_Query( $args ); 
+	
+
+	$output = '';
+	$output .= '<div id="portfolio-container" class="sc-portfolio clearfix container-fluid ' . esc_attr( $custom_class ) . '">' . PHP_EOL;
+
+	// check if we need to show category description
+	if ( $show_cat_description === 'true' ) {
+		$cat = get_term( (int)$category, 'portfolio_categories' );
+
+		if ( is_object( $cat ) && strlen( $cat->description ) > 0 ) {
+			$output .= '<div class="cat-description">' . PHP_EOL;
+			$output .= '<p>' . $cat->description . '</p>' . PHP_EOL;
+			$output .= '</div><!--close .cat-description-->' . PHP_EOL;
+		}
+	}
+
+	$isotope = false;
+
+	// check if show animation is on
+	if ( $show_animation === 'true' )
+		$isotope = true;
+
+	// check if filter is on
+	if ( $show_filters === 'true' ) {
+		$tags = array();
+		
+		$isotope = true;
+
+		// gather the unqiue tags from entries		
+		foreach ( $entries->posts as $post ) { 
+			$terms = wp_get_post_terms( $post->ID, 'portfolio_tags' ); 
+
+			foreach ( $terms as $term ) { 
+				$tags[] = $term->name; 
+			}
+		}
+
+		// remove any duplicates
+		$filtered_tags = array_unique( $tags );
+
+		if ( is_array( $filtered_tags ) && strlen( (string)$filtered_tags ) ) {
+			$output .= '<ul class="portfolio-sort clearfix">' . PHP_EOL;
+
+			// display the all filter
+			$output .= '<li><a href="#" title="' . esc_attr__( 'All', 'sp-theme' ) . '" data-filter="*" class="active">' . __( 'All', 'sp-theme' ) . '</a></li>' . PHP_EOL;
+
+			foreach ( $filtered_tags as $tag ) {
+				$output .= '<li><span class="divider"> / </span><a href="#" title="' . esc_attr( $tag ) . '" data-filter=".' . esc_attr( str_replace( ' ', '-', $tag ) ) . '-sort">' . $tag . '</a></li>' . PHP_EOL;	
+			}
+
+			$output .= '</ul>' . PHP_EOL;
+		}
+	}
+
+	// setup the columns
+	switch ( $columns ) {
+		case '1' :
+			if ( $isotope )
+				$span = 'isotope-1-column';
+			else
+				$span = sp_column_css( '', '', '', '12' );
+			break;
+		case '2' :
+			if ( $isotope )
+				$span = 'isotope-2-columns';
+			else
+				$span = sp_column_css( '', '', '', '6' );
+			break;
+		case '3' :
+			if ( $isotope )
+				$span = 'isotope-3-columns';
+			else
+				$span = sp_column_css( '', '', '', '4' );
+			break;
+		case '5' :
+			if ( $isotope )
+				$span = 'isotope-5-columns';
+			else
+				$span = sp_column_css( '', '', '', '2' );
+			break;
+		case '6' :
+			if ( $isotope )
+				$span = 'isotope-6-columns';
+			else
+				$span = sp_column_css( '', '', '', '2' );
+			break;
+		case '4' :
+		default :
+			if ( $isotope )
+				$span = 'isotope-4-columns';
+			else
+				$span = sp_column_css( '', '', '', '3' );
+			break;
+	}
+
+	// get the number of posts found
+	$post_count = $entries->found_posts;
+
+	$gal_id = '';
+
+	// check if link gallery is on - links the images in lightbox
+	if ( $link_gallery === 'true' ) 
+		$gal_id = time();
+
+	if ( $isotope ) {
+		$output .= '<div class="isotope-wrap center">' . PHP_EOL;
+	}
+
+	while ( $entries->have_posts() ) : $entries->the_post();
+		// get the tags
+		$terms = wp_get_post_terms( $post->ID, 'portfolio_tags' );
+
+		$tags = '';
+		
+		foreach ( $terms as $term ) { 
+			$tags .= ' ' . str_replace( ' ', '-', $term->name ) . '-sort'; 
+		}
+
+	
+		
+		$image_thumbnail = wp_get_attachment_image_src( get_post_thumbnail_id( $post->ID ), 'thumbnail' );
+		
+		$image_full = wp_get_attachment_image_src( get_post_thumbnail_id( $post->ID ), 'full' );
+				
+		
+		// if mosaic is on, don't continue down the page
+		if ( $mosaic === 'true' ) {
+			$output .= '<article id="post-' . esc_attr( $post->ID ) . '" class=" portfolio-entries type-portfolio-entries status-publish hentry group portfolio-item one_half crazy-sort nice-sort  portfolio-item ' . esc_attr( $tags ) . ' mosaic">' . PHP_EOL;
+
+			$output .= '<a href="' . $image_full[0] . '" title="' . the_title_attribute( 'echo=0' ) . '" class="post-image-link thickbox preview_link" data-rel="prettyPhoto[' . esc_attr( empty( $gal_id ) ? $post->ID : $gal_id ) . ']">' . PHP_EOL;
+			
+			$output .= '<img src="' . $image_thumbnail[0] . '" alt="' . esc_attr( $image_thumbnail['alt'] ) . '" />' . PHP_EOL;
+			
+			$output .= '<span class="hover-icon">Details</span></a>' . PHP_EOL;
+
+			// add custom user hook
+			do_action( 'sp_gallery_after_image', $post->ID );
+
+			$output .= '<h2 class="entry-title"><a data-rel="bookmark" title="'.get_the_title().'" href="'.get_the_permalink().'">'.get_the_title().'</a></h2></article>' . PHP_EOL;	        	    	
+			continue;
+		}
+
+		// only apply if isotope is off
+		if ( ! $isotope ) {
+			if ( (int)( $entries->current_post + 1 ) === 1 )
+				$output .= '<div class="items row center">' . PHP_EOL;
+		}
+
+		$output .= '<article id="post-' . esc_attr( $post->ID ) . '" class=" portfolio-entries type-portfolio-entries status-publish hentry group portfolio-item one_half crazy-sort nice-sort  portfolio-item ' . esc_attr( $span ) . ' ' . esc_attr( $tags ) . '">' . PHP_EOL;
+		
+		// if show gallery only
+		if ( $gallery_only === 'true') {    
+
+			$output .= '<figure class="image-wrap gallery-only" style="max-width:' . esc_attr( (int)$image_width ) . 'px;">' . PHP_EOL;
+
+			$output .= '<a href="' . $image_full[0] . '" title="' . the_title_attribute( 'echo=0' ) . '" class="post-image-link thickbox preview_link" data-rel="prettyPhoto[' . esc_attr( empty( $gal_id ) ? $post->ID : $gal_id ) . ']">' . PHP_EOL;
+			
+			$output .= '<img src="' . $image_thumbnail[0] . '" alt="' . esc_attr( $image_thumbnail['alt'] ) . '" />' . PHP_EOL;
+			
+			$output .= '<span class="hover-icon">Details</span></a>' . PHP_EOL;
+
+			$output .= '</figure><!--close .image-wrap-->' . PHP_EOL;
+		} else {
+			$output .= '<figure class="image-wrap" style="max-width:' . esc_attr( (int)$image_width ) . 'px;">' . PHP_EOL;
+			
+			$output .= '<a href="' . get_permalink() .'" title="' . esc_attr__( 'Detail', 'sp-theme' ) . '">' . PHP_EOL;
+			
+			$output .= '<img src="' . $image_thumbnail[0] . '" alt="' . esc_attr( $image_thumbnail['alt'] ) . '" />' . PHP_EOL;
+			
+			$output .= '<span class="hover-icon">Details</span></a>' . PHP_EOL;
+			
+			$output .= '<figcaption>' . PHP_EOL;
+				
+			// check if show title is on
+			if ( isset( $show_title ) && $show_title === 'true' ) { 
+				$output .= '<h2 class="entry-title"><a href="' . get_permalink() . '" title="' . sprintf( esc_attr__( 'Permalink to %s', 'sp-theme' ), the_title_attribute( 'echo=0' ) ) . '" data-rel="bookmark">' . get_the_title() . '</a></h2>' . PHP_EOL;
+			}	
+
+			// check if show excerpt is on	
+			if ( isset( $show_excerpt ) && $show_excerpt === 'true' ) {
+				if ( strlen( $post->post_excerpt ) > 0 ) {
+					$output .= get_the_excerpt() . PHP_EOL;
+				} else {
+					$output .= $post->post_content . PHP_EOL;
+				}
+			}
+
+			$output .= '</figcaption>' . PHP_EOL;
+
+			$output .= '</figure><!--close .image-wrap-->' . PHP_EOL;
+		} // end gallery only check                               
+		
+		// add custom user hook
+		do_action( 'sp_gallery_after_image', $post->ID );
+
+		$output .= '<h2 class="entry-title"><a data-rel="bookmark" title="'.get_the_title().'" href="'.get_the_permalink().'">'.get_the_title().'</a></h2></article>' . PHP_EOL;
+
+		// only apply if isotope is off
+		if ( ! $isotope ) {
+			if ( (int)( $entries->current_post + 1 ) % (int)$columns === 0 || (int)( $entries->current_post + 1 ) === (int)$post_count ) {
+				$output .= '</div><!--close items-->' . PHP_EOL;
+
+				// make sure it is not last post
+				if ( (int)( $entries->current_post + 1 ) !== (int)$post_count )
+					$output .= '<div class="items row center">' . PHP_EOL;
+			}
+		}
+	endwhile;
+
+	if ( $isotope )
+		$output .= '</div><!--close .isotope-wrap-->' . PHP_EOL;
+
+	//$output .= sp_pagination( $entries->max_num_pages ) . PHP_EOL;
+	$output .= '<input type="hidden" name="link_gallery" value="' . esc_attr( $link_gallery ) . '" class="link-gallery" />' . PHP_EOL;
+	$output .= '</div><!--close .sc-portfolio-->' . PHP_EOL;
+	
+	wp_reset_postdata();
+	
+	return $output;
+}
+
 ?>

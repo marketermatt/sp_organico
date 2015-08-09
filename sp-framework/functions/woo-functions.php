@@ -185,68 +185,85 @@ function sp_woo_template_loop_product_thumbnail( $context = 'product_grid' )
 			case 'product_grid' :
                 // if less than 2.0
                 if ( version_compare( WOOCOMMERCE_VERSION, '2.0', '<' ) ) {
-                    $image_width = $woocommerce->get_image_size( 'shop_catalog_image_width' );
-                    $image_height = $woocommerce->get_image_size( 'shop_catalog_image_height' );
+					$image_sizes = wc_get_image_size( 'shop_catalog' );
+					$image_width = $image_sizes['width'];
+					$image_height = $image_sizes['height'];
+					
                 } else {                    
-                    $catalog_sizes = $woocommerce->get_image_size( 'shop_catalog' );
-                    $image_width = $catalog_sizes['width'];
-                    $image_height = $catalog_sizes['height'];                    
+                    $image_sizes = wc_get_image_size( 'shop_catalog' );
+					$image_width = $image_sizes['width'];
+					$image_height = $image_sizes['height'];
                 }
 				break;
 				
 			case 'quickview_main' :
                 // if less than 2.0
                 if ( version_compare( WOOCOMMERCE_VERSION, '2.0', '<' ) ) {
-                    $image_width = $woocommerce->get_image_size( 'shop_catalog_image_width' );
-                    $image_height = $woocommerce->get_image_size( 'shop_catalog_image_height' );
+                    $image_sizes = wc_get_image_size( 'shop_catalog' );
+					$image_width = $image_sizes['width'];
+					$image_height = $image_sizes['height'];
                 } else {                    
-                    $catalog_sizes = $woocommerce->get_image_size( 'shop_catalog' );
-                    $image_width = $catalog_sizes['width'];
-                    $image_height = $catalog_sizes['height'];                    
+                   $image_sizes = wc_get_image_size( 'shop_catalog' );
+					$image_width = $image_sizes['width'];
+					$image_height = $image_sizes['height'];
                 }
 				break;
 				
 			case 'single_main' :
                 // if less than 2.0
                 if ( version_compare( WOOCOMMERCE_VERSION, '2.0', '<' ) ) {
-                    $image_width = $woocommerce->get_image_size( 'woocommerce_single_image_width' );
-                    $image_height = $woocommerce->get_image_size( 'woocommerce_single_image_height' );
+                    $image_sizes = wc_get_image_size( 'shop_catalog' );
+					$image_width = $image_sizes['width'];
+					$image_height = $image_sizes['height'];
                 } else {                    
-                    $catalog_sizes = $woocommerce->get_image_size( 'shop_single' );
-                    $image_width = $catalog_sizes['width'];
-                    $image_height = $catalog_sizes['height'];                    
+                    $image_sizes = wc_get_image_size( 'shop_catalog' );
+					$image_width = $image_sizes['width'];
+					$image_height = $image_sizes['height'];
                 }
 				break;
 				
 			case 'related_product' :
-				$image_width = sp_get_theme_init_setting( 'woo_related_product_image_size', 'width' );
-				$image_height = sp_get_theme_init_setting( 'woo_related_product_image_size', 'height' );
+				$image_sizes = wc_get_image_size( 'shop_catalog' );
+				$image_width = $image_sizes['width'];
+				$image_height = $image_sizes['height'];
 				break;
 
 			case 'upsell_product' :
-				$image_width = sp_get_theme_init_setting( 'woo_upsell_product_image_size', 'width' );
-				$image_height = sp_get_theme_init_setting( 'woo_upsell_product_image_size', 'height' );
+					$image_sizes = wc_get_image_size( 'shop_catalog' );
+					$image_width = $image_sizes['width'];
+					$image_height = $image_sizes['height'];
 				break;
 				
 			default :
                 // if less than 2.0
                 if ( version_compare( WOOCOMMERCE_VERSION, '2.0', '<' ) ) {
-                    $image_width = $woocommerce->get_image_size( 'shop_catalog_image_width' );
-                    $image_height = $woocommerce->get_image_size( 'shop_catalog_image_height' );
+					$image_sizes = wc_get_image_size( 'shop_catalog' );
+					$image_width = $image_sizes['width'];
+					$image_height = $image_sizes['height'];
                 } else {                    
-                    $catalog_sizes = $woocommerce->get_image_size( 'shop_catalog' );
-                    $image_width = $catalog_sizes['width'];
-                    $image_height = $catalog_sizes['height'];                    
+					$image_sizes = wc_get_image_size( 'shop_catalog' );
+					$image_width = $image_sizes['width'];
+					$image_height = $image_sizes['height'];
                 }
 				break;
 		endswitch;
 		
 	
 		if ( has_post_thumbnail() ) { ?>
-			<img class="product_image" alt="<?php the_title_attribute(); ?>" title="<?php the_title_attribute(); ?>" src="<?php echo sp_timthumb_format($context, sp_get_image($post->ID), $image_width, $image_height); ?>" width="<?php echo $image_width; ?>" height="<?php echo $image_height; ?>" />	
+		<?php 
+			$image = get_the_post_thumbnail( $post->ID, apply_filters( 'single_product_small_thumbnail_size', 'shop_thumbnail' ), array(
+				'title'	=> get_the_title($post->ID),
+				'alt'	=> get_the_title($post->ID),
+				'class' => 'product_image'
+				) );
+			echo $image;	
+		?>
+		
 		<?php } else { ?>
-			<img class="no-image" alt="No Image" title="<?php the_title_attribute(); ?>" src="<?php echo sp_timthumb_format($context, get_template_directory_uri().'/images/no-product-image.jpg', $image_width, $image_height); ?>" width="<?php echo $image_width; ?>" height="<?php echo $image_height; ?>" />	
-		<?php }
+		<img class="no-image" alt="No Image" title="<?php the_title_attribute(); ?>" src="<?php echo get_template_directory_uri().'/images/no-product-image.jpg'; ?>" width="<?php echo $image_width; ?>" height="<?php echo $image_height; ?>" />
+		<?php 
+	
+		}
 	
 }
 
@@ -457,7 +474,6 @@ if ( version_compare( WOOCOMMERCE_VERSION, '2.0', '<' ) ) {
 				echo '<p class="total"><strong>' . __( 'Subtotal', 'sp' ) . ':</strong> ' . $woocommerce->cart->get_cart_total() . '</p>';
 
 				do_action( 'woocommerce_widget_shopping_cart_before_buttons' );
-
 				echo '<p class="buttons"><a href="' . $woocommerce->cart->get_cart_url() . '" class="viewcart-button"><span>' . __( 'View Cart &rarr;', 'sp' ) . '</span></a></p>';
 			endif;
 			echo $after_widget;

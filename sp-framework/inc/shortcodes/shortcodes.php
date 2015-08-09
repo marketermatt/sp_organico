@@ -6,6 +6,8 @@
  *
  * Shortcodes 32
  */
+ 
+
 
 if ( ! defined( 'ABSPATH' ) ) exit; // no direct access
 
@@ -525,13 +527,13 @@ function sp_portfolio_shortcode( $atts, $content = null ) {
 
 		// if mosaic is on, don't continue down the page
 		if ( $mosaic === 'true' ) {
-			$output .= '<article id="post-' . esc_attr( $post->ID ) . '" class="portfolio-item ' . esc_attr( $tags ) . ' mosaic">' . PHP_EOL;
+			$output .= '<article id="post-' . esc_attr( $post->ID ) . '" class=" portfolio-entries type-portfolio-entries status-publish hentry group portfolio-item one_half crazy-sort nice-sort  portfolio-item ' . esc_attr( $tags ) . ' mosaic">' . PHP_EOL;
 
-			$output .= '<a href="' . esc_url( $image_full['url'] ) . '" title="' . the_title_attribute( 'echo=0' ) . '" class="portfolio-image-link mfp-image" data-rel="sp-lightbox[' . esc_attr( empty( $gal_id ) ? $post->ID : $gal_id ) . ']">' . PHP_EOL;
+			$output .= '<a href="' . esc_url( $image_full['url'] ) . '" title="' . the_title_attribute( 'echo=0' ) . '" class="post-image-link thickbox preview_link  portfolio-image-link mfp-image" data-rel="prettyPhoto[' . esc_attr( empty( $gal_id ) ? $post->ID : $gal_id ) . ']">' . PHP_EOL;
 			
 			$output .= '<img src="' . esc_url( $image_thumbnail['url'] ) . '" alt="' . esc_attr( $image_thumbnail['alt'] ) . '" />' . PHP_EOL;
 			
-			$output .= '<i class="hover-icon icon-resize-full" aria-hidden="true"></i></a>' . PHP_EOL;
+			$output .= '<span class="hover-icon">Details</span></a>' . PHP_EOL;
 
 			// add custom user hook
 			do_action( 'sp_gallery_after_image', $post->ID );
@@ -546,18 +548,18 @@ function sp_portfolio_shortcode( $atts, $content = null ) {
 				$output .= '<div class="items row center">' . PHP_EOL;
 		}
 
-		$output .= '<article id="post-' . esc_attr( $post->ID ) . '" class="portfolio-item ' . esc_attr( $span ) . ' ' . esc_attr( $tags ) . '">' . PHP_EOL;
+		$output .= '<article id="post-' . esc_attr( $post->ID ) . '" class="   portfolio-entries type-portfolio-entries status-publish hentry group portfolio-item one_half crazy-sort nice-sort  portfolio-item ' . esc_attr( $span ) . ' ' . esc_attr( $tags ) . '">' . PHP_EOL; 
 		
 		// if show gallery only
 		if ( $gallery_only === 'true') {    
 
 			$output .= '<figure class="image-wrap gallery-only" style="max-width:' . esc_attr( (int)$image_width ) . 'px;">' . PHP_EOL;
 
-			$output .= '<a href="' . esc_url( $image_full['url'] ) . '" title="' . the_title_attribute( 'echo=0' ) . '" class="portfolio-image-link mfp-image" data-rel="sp-lightbox[' . esc_attr( empty( $gal_id ) ? $post->ID : $gal_id ) . ']">' . PHP_EOL;
+			$output .= '<a href="' . esc_url( $image_full['url'] ) . '" title="' . the_title_attribute( 'echo=0' ) . '" class="post-image-link thickbox preview_link portfolio-image-link mfp-image" data-rel="prettyPhoto[' . esc_attr( empty( $gal_id ) ? $post->ID : $gal_id ) . ']">' . PHP_EOL;
 			
 			$output .= '<img src="' . esc_url( $image_thumbnail['url'] ) . '" alt="' . esc_attr( $image_thumbnail['alt'] ) . '" />' . PHP_EOL;
 			
-			$output .= '<i class="hover-icon icon-resize-full" aria-hidden="true"></i></a>' . PHP_EOL;
+			$output .= '<span class="hover-icon">Details</span></a>' . PHP_EOL;
 
 			$output .= '</figure><!--close .image-wrap-->' . PHP_EOL;
 		} else {
@@ -567,12 +569,12 @@ function sp_portfolio_shortcode( $atts, $content = null ) {
 			
 			$output .= '<img src="' . esc_url( $image_thumbnail['url'] ) . '" alt="' . esc_attr( $image_thumbnail['alt'] ) . '" />' . PHP_EOL;
 			
-			$output .= '<i class="hover-icon icon-link" aria-hidden="true"></i></a>' . PHP_EOL;
+			$output .= '<span class="hover-icon">Details</span></i></a>' . PHP_EOL;
 			
 			$output .= '<figcaption>' . PHP_EOL;
 				
 			// check if show title is on
-			if ( isset( $show_title ) && $show_title === 'true' ) { 
+			/* if ( isset( $show_title ) && $show_title === 'true' ) { 
 				$output .= '<h2 class="entry-title"><a href="' . get_permalink() . '" title="' . sprintf( esc_attr__( 'Permalink to %s', 'sp-theme' ), the_title_attribute( 'echo=0' ) ) . '" data-rel="bookmark">' . get_the_title() . '</a></h2>' . PHP_EOL;
 			}	
 
@@ -583,7 +585,9 @@ function sp_portfolio_shortcode( $atts, $content = null ) {
 				} else {
 					$output .= $post->post_content . PHP_EOL;
 				}
-			}
+			} */
+			
+			$output .= '<h2 class="entry-title"><a data-rel="bookmark" title="'.get_the_title().'" href="'.get_permalink().'">'.get_the_title().'</a></h2>';
 
 			$output .= '</figcaption>' . PHP_EOL;
 

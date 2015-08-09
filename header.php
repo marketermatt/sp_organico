@@ -2,7 +2,7 @@
 global $page, $paged, $current_user, $woocommerce;
 get_currentuserinfo();
 $fb_html = '';
-if ( sp_isset_option( 'facebook_opengraph', 'boolean', 'true' ) && ( ( class_exists( 'WP_eCommerce' ) && wpsc_is_single_product() ) ||  ( class_exists( 'woocommerce' ) && is_product() ) ) ) 
+if ( sp_isset_option( 'facebook_opengraph', 'boolean', 'true' ) && (  ( class_exists( 'WooCommerce' ) && is_product() ) ) ) 
 { 
 	$fb_html = 'xmlns="http://www.w3.org/1999/xhtml" xmlns:og="http://ogp.me/ns#" xmlns:fb="http://www.facebook.com/2008/fbml"';
 } ?>
@@ -31,28 +31,10 @@ if ( sp_isset_option( 'facebook_opengraph', 'boolean', 'true' ) && ( ( class_exi
 
 	?></title>
 <?php 
-if ( sp_isset_option( 'facebook_opengraph', 'boolean', 'true' ) && ( class_exists( 'WP_eCommerce' ) || class_exists( 'woocommerce' ) ) ) 
+if ( sp_isset_option( 'facebook_opengraph', 'boolean', 'true' ) && class_exists( 'WooCommerce' )  ) 
 { 
-	if ( class_exists( 'WP_eCommerce' ) && wpsc_is_single_product() ) {
-		while ( wpsc_have_products() ) : wpsc_the_product();
-			$product_title = wpsc_the_product_title();
-			$product_url = wpsc_the_product_permalink();
-			$product_image_link = wpsc_the_product_image();
-			$product_description = wpsc_the_product_description();
-		endwhile;
-		wp_reset_postdata(); ?>
-<meta property="og:title" content="<?php echo $product_title; ?>" />
-<meta property="og:type" content="<?php echo sp_isset_option( 'facebook_opengraph_type', 'value' ); ?>" />
-<meta property="og:url" content="<?php echo $product_url; ?>" />
-<meta property="og:image" content="<?php echo $product_image_link; ?>" />
-<meta property="og:site_name" content="<?php echo bloginfo( 'name' ); ?>" />
-<meta property="fb:admins" content="<?php echo sp_isset_option( 'facebook_opengraph_admin_id', 'value' ); ?>" />
-<meta property="fb:app_id" content="<?php echo sp_isset_option( 'facebook_opengraph_app_id', 'value' ); ?>" /> 
-<meta property="og:description" content="<?php echo strip_tags( $product_description ); ?>" />            
-	<?php        
-	}
-	
-	if ( class_exists( 'woocommerce' ) && is_product() ) {
+		
+	if ( class_exists( 'WooCommerce' ) && is_product() ) {
 		while ( have_posts() ) : the_post();
 			$product_title = get_the_title();
 			$product_url = get_permalink();
@@ -93,7 +75,7 @@ if ( sp_isset_option( 'facebook_opengraph', 'boolean', 'true' ) && ( class_exist
             <?php wp_nav_menu( array( 'container' => 'false', 'fallback_cb' => 'header_menu', 'theme_location' => 'header', 'before' => '<span class="before">&nbsp;</span>') ); ?>
     	</nav>
             <!--HEADER CART-->
-            <?php if ( class_exists( 'WP_eCommerce' ) || class_exists( 'woocommerce' ) )
+            <?php if ( class_exists( 'WooCommerce' ) )
 			{ ?>
             
             <div id="header_cart">
@@ -102,14 +84,8 @@ if ( sp_isset_option( 'facebook_opengraph', 'boolean', 'true' ) && ( class_exist
                     <span class="icon"></span>
                     
                     <em class="count">
-                <?php if (class_exists('WP_eCommerce')) { 
-                            if (wpsc_cart_item_count() == 0 || isset($_GET['sessionid'])) { 
-                                echo "0";
-                            } else { 
-                                echo wpsc_cart_item_count(); 
-                            } 
-                    } ?>
-                    <?php if (class_exists('woocommerce')) {
+                    <?php 
+					if (class_exists('WooCommerce')) {
 								if ($woocommerce->cart->cart_contents_count == 0) {
 									echo "0";
 								} else {
@@ -120,17 +96,14 @@ if ( sp_isset_option( 'facebook_opengraph', 'boolean', 'true' ) && ( class_exist
             	<div id="cartContents">
                     <div class="shopping-cart-wrapper">
                         <?php 
-                        if (class_exists('WP_eCommerce')) {
-                            get_template_part('wpsc','cart_widget');
-                        }
-						if (class_exists('woocommerce')) {
+						if (class_exists('WooCommerce')) {
 							the_widget('SP_WooCommerce_Widget_Cart', array('title' => '&nbsp;'));
 						}
                         ?>
                     </div>
                 </div><!--close cartContents-->    
                 </div><!--close hover-wrap-->   
-				<?php if ( class_exists( 'woocommerce' ) ) {
+				<?php if ( class_exists( 'WooCommerce' ) ) {
                     $account_url = get_permalink( get_option( 'woocommerce_myaccount_page_id', true ) );
                 } else {
                     $account_url = get_option('user_account_url');

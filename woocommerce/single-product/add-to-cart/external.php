@@ -1,15 +1,22 @@
 <?php
 /**
- * External Add to Cart
+ * External product add to cart
+ *
+ * @author 		WooThemes
+ * @package 	WooCommerce/Templates
+ * @version     2.1.0
  */
-?>
-<?php do_action('woocommerce_before_add_to_cart_button'); ?>
-        <div class="woo_buy_button_container group">
-			<a href="<?php echo $product_url; ?>" rel="nofollow" class="external-button alt add_to_cart_button"><span><?php echo apply_filters('single_add_to_cart_text', $button_text, 'external'); ?></span></a>
-            <div class="loading_animation">
-                <img title="Loading" alt="Loading" src="<?php echo get_template_directory_uri(); ?>/images/ajax-loader.gif" />
-            </div><!--close loading_animation-->                                        
-       
-		</div><!--close wpsc_buy_button_container-->
 
-<?php do_action('woocommerce_after_add_to_cart_button'); ?>
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly
+}
+
+?>
+
+<?php do_action( 'woocommerce_before_add_to_cart_button' ); ?>
+
+<p class="cart">
+	<a href="<?php echo esc_url( $product_url ); ?>" rel="nofollow" class="single_add_to_cart_button button alt"><?php echo $button_text; ?></a>
+</p>
+
+<?php do_action( 'woocommerce_after_add_to_cart_button' ); ?>

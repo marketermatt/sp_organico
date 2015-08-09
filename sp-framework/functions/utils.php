@@ -659,14 +659,8 @@ function sp_is_store_page()
 function sp_is_single_product_page()
 { 
 	$is_single_product_page = false;
-	
-	if ( class_exists( 'WP_eCommerce' ) )
-	{
-		if ( wpsc_is_single_product() ) 
-			$is_single_product_page = true;
-	}
-	
-	if ( class_exists( 'woocommerce' ) )
+		
+	if ( class_exists( 'WooCommerce' ) )
 	{
 		if ( is_product() )
 			$is_single_product_page = true;	

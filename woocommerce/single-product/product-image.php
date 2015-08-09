@@ -1,38 +1,49 @@
 <?php
 /**
  * Single Product Image
+ *
+ * @author 		WooThemes
+ * @package 	WooCommerce/Templates
+ * @version     2.0.14
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly
+}
 
 global $post, $woocommerce, $product;
 
-// if less than 2.0
-if ( version_compare( WOOCOMMERCE_VERSION, '2.0', '<' ) ) {	
-	$image_width = get_option( 'woocommerce_single_image_width' );
-	$image_height = get_option( 'woocommerce_single_image_height' );
-} else {			
-	$image_sizes = $woocommerce->get_image_size( 'shop_single' );
-	$image_width = $image_sizes['width'];
-	$image_height = $image_sizes['height'];
-}
-
 ?>
 <div class="imagecol images">
-	<?php if ( has_post_thumbnail() ) : ?>
 
-		<a data-rel="prettyPhoto[<?php echo $post->ID; ?>]" href="<?php echo sp_get_image($post->ID); ?>" class="zoom thickbox preview_link" title="<?php the_title_attribute(); ?>" data-id="<?php echo $post->ID; ?>" onclick="return false;">
-        <img width="<?php echo $image_width; ?>" height="<?php echo $image_height; ?>" class="product_image attachment-shop_single wp-post-image" alt="<?php the_title_attribute(); ?>" src="<?php echo sp_timthumb_format('single_main', sp_get_image($post->ID), $image_width, $image_height); ?>" />
-        </a>
+	<?php
+		if ( has_post_thumbnail() ) {
 
-	<?php else : ?>
-	
-        <a data-rel="prettyPhoto[<?php echo $post->ID; ?>]" class="zoom thickbox preview_link" href="<?php echo get_template_directory_uri(); ?>/images/no-product-image.jpg" title="<?php the_title_attribute(); ?>" data-id="<?php echo $post->ID; ?>" onclick="return false;">
-        <img class="no-image" alt="No Image" title="<?php the_title_attribute(); ?>" src="<?php echo sp_timthumb_format('single_main', get_template_directory_uri().'/images/no-product-image.jpg', $image_width, $image_height); ?>" width="<?php echo $image_width; ?>" height="<?php echo $image_height; ?>" />
-        </a>
-	
-	<?php endif; ?>            
-  <?php	
-	  global $main_image_height; 
-	  $main_image_height = $image_height;   
-      do_action('woocommerce_product_thumbnails');
-  ?>
-</div><!--close imagecol-->
+			$image_title 	= esc_attr( get_the_title( get_post_thumbnail_id() ) );
+			$image_caption 	= get_post( get_post_thumbnail_id() )->post_excerpt;
+			$image_link  	= wp_get_attachment_url( get_post_thumbnail_id() );
+			$image       	= get_the_post_thumbnail( $post->ID, apply_filters( 'single_product_large_thumbnail_size', 'shop_single' ), array(
+				'title'	=> $image_title,
+				'alt'	=> $image_title
+				) );
+
+			$attachment_count = count( $product->get_gallery_attachment_ids() );
+
+			if ( $attachment_count > 0 ) {
+				$gallery = '[product-gallery]';
+			} else {
+				$gallery = '';
+			}
+
+			echo apply_filters( 'woocommerce_single_product_image_html', sprintf( '<a href="%s" itemprop="image" class="woocommerce-main-image zoom" title="%s" data-rel="prettyPhoto' . $gallery . '">%s</a>', $image_link, $image_caption, $image ), $post->ID );
+
+		} else {
+
+			echo apply_filters( 'woocommerce_single_product_image_html', sprintf( '<img src="%s" alt="%s" />', wc_placeholder_img_src(), __( 'Placeholder', 'woocommerce' ) ), $post->ID );
+
+		}
+	?>
+
+	<?php do_action( 'woocommerce_product_thumbnails' ); ?>
+
+</div>

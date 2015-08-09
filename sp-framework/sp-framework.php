@@ -59,19 +59,6 @@ if ( file_exists( get_template_directory() . '/sp-widgets.php' ) )
 if ( file_exists( get_template_directory() . '/sp-menu.php' ) )
 	require_once( get_template_directory() . '/sp-menu.php' );
 
-// include WPEC also bought function
-if ( class_exists( 'WP_eCommerce' ) )
-{
-	if ( file_exists( get_template_directory() . '/sp-also-bought.php' ) )
-		require_once( get_template_directory() . '/sp-also-bought.php' );
-}
-
-// include WPEC functions
-if ( class_exists( 'WP_eCommerce' ) )
-{
-	if ( file_exists( get_template_directory() . '/sp-framework/functions/wpec-functions.php' ) )
-		require_once( get_template_directory() . '/sp-framework/functions/wpec-functions.php' );
-}
 
 // include WOO Commerce functions
 if ( class_exists( 'woocommerce' ) )

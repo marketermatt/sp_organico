@@ -3,25 +3,26 @@
  * Shipping Methods Display
  *
  * In 2.1 we show methods per package. This allows for multiple methods per order if so desired.
- * actual version 2.1.0
  *
  * @author 		WooThemes
  * @package 	WooCommerce/Templates
- * @version     5.0.0
+ * @version     2.3.0
  */
-if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 ?>
 <tr class="shipping">
-	<th colspan="2"><?php
+	<th><?php
 		if ( $show_package_details ) {
-			printf( __( 'Shipping #%d', 'sp-theme' ), $index + 1 );
+			printf( __( 'Shipping #%d', 'woocommerce' ), $index + 1 );
 		} else {
-			_e( 'Shipping and Handling:', 'sp-theme' );
+			_e( 'Shipping', 'woocommerce' );
 		}
 	?></th>
-</tr>
-<tr class="shipping">
-	<td colspan="2">
+	<td>
 		<?php if ( ! empty( $available_methods ) ) : ?>
 
 			<?php if ( 1 === count( $available_methods ) ) :
@@ -43,8 +44,8 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 				<ul id="shipping_method">
 					<?php foreach ( $available_methods as $method ) : ?>
 						<li>
-							
-							<label for="shipping_method_<?php echo $index; ?>_<?php echo sanitize_title( $method->id ); ?>"><input type="radio" name="shipping_method[<?php echo $index; ?>]" data-index="<?php echo $index; ?>" id="shipping_method_<?php echo $index; ?>_<?php echo sanitize_title( $method->id ); ?>" value="<?php echo esc_attr( $method->id ); ?>" <?php checked( $method->id, $chosen_method ); ?> class="shipping_method" /><?php echo wp_kses_post( wc_cart_totals_shipping_method_label( $method ) ); ?></label>
+							<input type="radio" name="shipping_method[<?php echo $index; ?>]" data-index="<?php echo $index; ?>" id="shipping_method_<?php echo $index; ?>_<?php echo sanitize_title( $method->id ); ?>" value="<?php echo esc_attr( $method->id ); ?>" <?php checked( $method->id, $chosen_method ); ?> class="shipping_method" />
+							<label for="shipping_method_<?php echo $index; ?>_<?php echo sanitize_title( $method->id ); ?>"><?php echo wp_kses_post( wc_cart_totals_shipping_method_label( $method ) ); ?></label>
 						</li>
 					<?php endforeach; ?>
 				</ul>
@@ -53,13 +54,17 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 		<?php elseif ( ! WC()->customer->get_shipping_state() || ! WC()->customer->get_shipping_postcode() ) : ?>
 
-			<?php if ( is_cart() ) : ?>
+			<?php if ( is_cart() && get_option( 'woocommerce_enable_shipping_calc' ) === 'yes' ) : ?>
 
-				<p><?php _e( 'No shipping methods were found; please recalculate your shipping or continue to checkout and enter your full address to see if there is shipping available to your location.', 'sp-theme' ); ?></p>
+				<p><?php _e( 'Please use the shipping calculator to see available shipping methods.', 'woocommerce' ); ?></p>
+
+			<?php elseif ( is_cart() ) : ?>
+
+				<p><?php _e( 'Please continue to the checkout and enter your full address to see if there are any available shipping methods.', 'woocommerce' ); ?></p>
 
 			<?php else : ?>
 
-				<p><?php _e( 'Please fill in your details to see available shipping methods.', 'sp-theme' ); ?></p>
+				<p><?php _e( 'Please fill in your details to see available shipping methods.', 'woocommerce' ); ?></p>
 
 			<?php endif; ?>
 
@@ -68,17 +73,13 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 			<?php if ( is_cart() ) : ?>
 
 				<?php echo apply_filters( 'woocommerce_cart_no_shipping_available_html',
-					'<div class="woocommerce-error"><p>' .
-					sprintf( __( 'Sorry, shipping is unavailable %s.', 'sp-theme' ) . ' ' . __( 'If you require assistance or wish to make alternate arrangements please contact us.', 'sp-theme' ), WC()->countries->shipping_to_prefix() . ' ' . WC()->countries->countries[ WC()->customer->get_shipping_country() ] ) .
-					'</p></div>'
+					'<p>' . __( 'There are no shipping methods available. Please double check your address, or contact us if you need any help.', 'woocommerce' ) . '</p>'
 				); ?>
 
 			<?php else : ?>
 
 				<?php echo apply_filters( 'woocommerce_no_shipping_available_html',
-					'<p>' .
-					sprintf( __( 'Sorry, shipping is unavailable %s.', 'sp-theme' ) . ' ' . __( 'If you require assistance or wish to make alternate arrangements please contact us.', 'sp-theme' ), WC()->countries->shipping_to_prefix() . ' ' . WC()->countries->countries[ WC()->customer->get_shipping_country() ] ) .
-					'</p>'
+					'<p>' . __( 'There are no shipping methods available. Please double check your address, or contact us if you need any help.', 'woocommerce' ) . '</p>'
 				); ?>
 
 			<?php endif; ?>
@@ -93,8 +94,12 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 					}
 				}
 
-				echo '<p class="woocommerce-shipping-contents"><small>' . __( 'Shipping', 'sp-theme' ) . ': ' . implode( ', ', $product_names ) . '</small></p>';
+				echo '<p class="woocommerce-shipping-contents"><small>' . __( 'Shipping', 'woocommerce' ) . ': ' . implode( ', ', $product_names ) . '</small></p>';
 			?>
+		<?php endif; ?>
+
+		<?php if ( is_cart() ) : ?>
+			<?php woocommerce_shipping_calculator(); ?>
 		<?php endif; ?>
 	</td>
 </tr>

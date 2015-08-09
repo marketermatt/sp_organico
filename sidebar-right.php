@@ -46,21 +46,7 @@ $sitewide_widgets = get_post_meta( $post->ID, '_sp_page_layout_sitewide_widgets'
 ?>    
 
 <?php
-	// check if WPEC is active
-	if (class_exists('WP_eCommerce')) {
-		if (sp_isset_option( 'custom_product_category_widget', 'isset' ) && is_array(sp_isset_option( 'custom_product_category_widget', 'value' ))) {
-			global $post;
-			$cat_obj = wp_get_post_terms($post->ID, 'wpsc_product_category', array('fields' => 'ids'));
-			$cat_ids = sp_isset_option( 'custom_product_category_widget', 'value' );
-			foreach($cat_ids as $cat) {
-				if (is_array($cat_obj)) {
-					if (in_array($cat, $cat_obj)) {
-						dynamic_sidebar('sidebar-right-product-category-'.$cat);	
-					}
-				}
-			}
-		}
-	}
+	
 	// check if WOO is active
 	if (class_exists('woocommerce')) {
 		if (sp_isset_option( 'custom_product_category_widget', 'isset' ) && is_array(sp_isset_option( 'custom_product_category_widget', 'value' ))) {
