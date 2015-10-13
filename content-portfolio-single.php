@@ -11,10 +11,10 @@ if ( ! isset( $image_height) || empty( $image_height ) )
 ?>
       <?php 
 	  		// get the image
-			$post_image_url = sp_get_image( $post->ID );
+			$post_image_url = has_post_thumbnail(get_the_ID());
 			  if (has_post_thumbnail() && $post_image_url) { ?>
 				  <div class="image-wrap">
-				  <a href="<?php echo $post_image_url; ?>" data-rel="prettyPhoto[<?php echo $post->ID; ?>]" class="thickbox preview_link" title="<?php the_title_attribute(); ?>"><img width="<?php echo $image_width; ?>" height="<?php echo $image_height; ?>" class="wp-post-image portfolio-single-image" alt="<?php the_title_attribute(); ?>" src="<?php echo sp_timthumb_format( 'portfolio_single', $post_image_url, $image_width, $image_height ); ?>" /><span class="hover-icon"><?php _e( 'Details', 'sp' ); ?></span></a>	
+				  <a href="<?php echo $post_image_url; ?>" data-rel="prettyPhoto[<?php echo $post->ID; ?>]" class="thickbox preview_link" title="<?php the_title_attribute(); ?>"><?php echo get_the_post_thumbnail( $post->ID, array($image_width,$image_height), array( 'class' => 'wp-post-image portfolio-single-image' ) ); ?><span class="hover-icon"><?php _e( 'Details', 'sp' ); ?></span></a>	
 				  </div><!--close image-wrap-->   
 			  <?php } else { ?>
 				  <div class="image-wrap no-image">

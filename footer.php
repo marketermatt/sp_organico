@@ -29,7 +29,7 @@ if (class_exists( 'WooCommerce' )) {
 													
 						echo '<li>';
 
-						if (sp_get_image(get_the_ID())) {
+						if (has_post_thumbnail(get_the_ID())) {
 							echo '<a href="' . get_permalink(). '" class="products" title="'.__("More Details",'sp').'">';
 							echo woocommerce_get_product_thumbnail('shop_catalog');
 							echo "</a>";

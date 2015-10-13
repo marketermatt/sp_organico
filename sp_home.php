@@ -126,7 +126,7 @@ if ( class_exists( 'woocommerce' ) )
 							<?php
                             if ( has_post_thumbnail() ) { ?>
                             <div class="featured_image">
-                                    <a href="<?php the_permalink(); ?>" title="<?php _e("Buy Now",'sp'); ?>"><img src="<?php echo sp_timthumb_format( 'homepage_slider', sp_get_image( get_the_ID() ), $image_width, $image_height ); ?>" width="<?php echo $image_width; ?>" height="<?php echo $image_height; ?>" alt="<?php the_title(); ?>" /></a>
+                                    <a href="<?php the_permalink(); ?>" title="<?php _e("Buy Now",'sp'); ?>"><?php echo get_the_post_thumbnail( $product_id, array($image_width,$image_height), array( 'class' => '' ) ); ?></a>
                             </div><!--close featured_image-->
                             <?php } else { ?>
                             <div class="featured_image">

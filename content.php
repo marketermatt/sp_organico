@@ -5,11 +5,12 @@ $image_height = get_option('thumbnail_size_h');
     
 		<article id="post-<?php the_ID(); ?>" <?php post_class('group list'); ?>>
 			<?php  
-			$post_image_url = sp_get_image( $post->ID );
+			$post_image_url = has_post_thumbnail(get_the_ID());
 			if (has_post_thumbnail()  && $post_image_url ) { ?>
 				<div class="image-wrap">
 				<a href="<?php the_permalink(); ?>" title="<?php _e( 'Read More', 'sp' ); ?>" class="post-image-link">
-				<img width="<?php echo $image_width; ?>" height="<?php echo $image_height; ?>" class="wp-post-image" alt="<?php the_title_attribute(); ?>" src="<?php echo sp_timthumb_format( 'blog_list', $post_image_url, $image_width, $image_height ); ?>" />	
+				<?php // context was blog_list for timthumb 310x80
+					echo get_the_post_thumbnail($post->ID, 'thumbnail', array('class' => "wp-post-image $size", 'alt' => trim( strip_tags($attachment->post_title)), 'title' => trim( strip_tags($attachment->post_title)))); ?>
                 <span class="more"><?php _e('Read More', 'sp'); ?></span></a>
                 </div><!--close image-wrap-->   
                 <div class="post-meta">           
